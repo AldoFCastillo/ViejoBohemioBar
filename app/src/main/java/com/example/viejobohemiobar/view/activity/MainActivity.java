@@ -11,6 +11,7 @@ import android.os.Bundle;
 
 import com.example.viejobohemiobar.R;
 import com.example.viejobohemiobar.view.fragment.HomeFragment;
+import com.example.viejobohemiobar.view.fragment.MenuFragment;
 import com.example.viejobohemiobar.view.fragment.ScannerFragment;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
@@ -18,6 +19,7 @@ import com.google.zxing.integration.android.IntentResult;
 public class MainActivity extends AppCompatActivity implements HomeFragment.listener {
 
     private FragmentManager fragmentManager;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +40,9 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
     @Override
     public void homeListener() {
         setFragment(new ScannerFragment());
+
     }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -51,5 +55,13 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
 
         HomeFragment homeFragment = HomeFragment.newInstance(text);
         setFragment(homeFragment);
+
+        setFragment(new MenuFragment());
+    }
+
+    @Override
+    public void onBackPressed() {
+        // super.onBackPressed();
+        setFragment(new HomeFragment());
     }
 }

@@ -65,5 +65,4 @@ public class ScannerFragment extends Fragment {
         return view;
     }
 
-
 }
