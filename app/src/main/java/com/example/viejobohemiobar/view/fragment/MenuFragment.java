@@ -1,11 +1,13 @@
 package com.example.viejobohemiobar.view.fragment;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -28,6 +30,7 @@ public class MenuFragment extends Fragment implements ProductAdapter.adapterList
     private static final String ARG_LIST = "productList";
     private List<Product> productList;
     private ProductAdapter productAdapter;
+    private listener listener;
 
     @BindView(R.id.recyclerMenuFragment)
     RecyclerView recyclerView;
@@ -42,6 +45,12 @@ public class MenuFragment extends Fragment implements ProductAdapter.adapterList
         args.putSerializable(ARG_LIST, result);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        this.listener = (listener) context;
     }
 
     @Override
@@ -67,14 +76,14 @@ public class MenuFragment extends Fragment implements ProductAdapter.adapterList
         ResultViewModel resultViewModel = ViewModelProviders.of(this).get(ResultViewModel.class);
 
         resultViewModel.getResults().observe(this, new Observer<Result>() {
-                    @Override
-                    public void onChanged(Result result) {
-                        productList = result.getResults();
-                        productAdapter = new ProductAdapter(MenuFragment.this, productList);
-                        recyclerView.setAdapter(productAdapter);
+            @Override
+            public void onChanged(Result result) {
+                productList = result.getResults();
+                productAdapter = new ProductAdapter(MenuFragment.this, productList);
+                recyclerView.setAdapter(productAdapter);
 
-                    }
-                });
+            }
+        });
 
         return view;
     }
@@ -88,7 +97,13 @@ public class MenuFragment extends Fragment implements ProductAdapter.adapterList
     }
 
     @Override
-    public void selection(Integer adapterPosition) {
+    public void selection(Integer adapterPosition, Result result) {
         Toast.makeText(getContext(), productList.get(adapterPosition).getTitle(), Toast.LENGTH_SHORT).show();
+        listener.menuListener(adapterPosition, result);
+
+    }
+
+    public interface listener{
+        void menuListener(Integer adapterPosition, Result result);
     }
 }

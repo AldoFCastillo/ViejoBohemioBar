@@ -30,6 +30,11 @@ public class HomeFragment extends Fragment {
     @BindView(R.id.textViewHome)
     TextView textViewHome;
 
+    //TODO BORRAR
+
+    @BindView(R.id.buttonSkip)
+    Button getButtonSkip;
+
     public HomeFragment() {
         // Required empty public constructor
     }
@@ -65,10 +70,18 @@ public class HomeFragment extends Fragment {
 
         textViewHome.setText(mParam1);
 
+        //TODO BORRAR
+        getButtonSkip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.homeListener(false);
+            }
+        });
+
         buttonScan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                listener.homeListener();
+                listener.homeListener(true);
             }
         });
 
@@ -76,6 +89,6 @@ public class HomeFragment extends Fragment {
     }
 
     public interface listener{
-        void homeListener();
+        void homeListener(Boolean boo);
     }
 }

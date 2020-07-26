@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.viejobohemiobar.R;
 import com.example.viejobohemiobar.model.pojo.Product;
+import com.example.viejobohemiobar.model.pojo.Result;
 
 import java.text.NumberFormat;
 import java.util.List;
@@ -71,7 +72,9 @@ public class ProductAdapter extends RecyclerView.Adapter {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    listener.selection(getAdapterPosition());
+                    Result result = new Result();
+                    result.setResults(productList);
+                    listener.selection(getAdapterPosition(), result);
                 }
             });
         }
@@ -101,7 +104,6 @@ public class ProductAdapter extends RecyclerView.Adapter {
 
 
     public interface adapterListener {
-        void selection(Integer adapterPosition);
+        void selection(Integer adapterPosition, Result result);
     }
 }
-

@@ -10,13 +10,14 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.example.viejobohemiobar.R;
+import com.example.viejobohemiobar.model.pojo.Result;
 import com.example.viejobohemiobar.view.fragment.HomeFragment;
 import com.example.viejobohemiobar.view.fragment.MenuFragment;
 import com.example.viejobohemiobar.view.fragment.ScannerFragment;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
-public class MainActivity extends AppCompatActivity implements HomeFragment.listener {
+public class MainActivity extends AppCompatActivity implements HomeFragment.listener, MenuFragment.listener {
 
     private FragmentManager fragmentManager;
 
@@ -38,8 +39,10 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
     }
 
     @Override
-    public void homeListener() {
-        setFragment(new ScannerFragment());
+    public void homeListener(Boolean boo) {
+        if (boo) {
+            setFragment(new ScannerFragment());
+        } else setFragment(new MenuFragment());
 
     }
 
@@ -63,5 +66,15 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
     public void onBackPressed() {
         // super.onBackPressed();
         setFragment(new HomeFragment());
+    }
+
+    @Override
+    public void menuListener(Integer adapterPosition, Result result) {
+        Bundle bundle = new Bundle();
+        bundle.putInt(ProductDetails.KEY_POSITION, adapterPosition);
+        bundle.putSerializable(ProductDetails.KEY_RESULT, result);
+        Intent intent = new Intent(this, ProductDetails.class);
+        intent.putExtras(bundle);
+        startActivity(intent);
     }
 }
