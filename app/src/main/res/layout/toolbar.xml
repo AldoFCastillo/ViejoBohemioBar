@@ -8,14 +8,14 @@
     app:titleTextColor="@color/colorTextoOscuro">
 
 
-    <TextView
+    <!--<TextView
         android:id="@+id/titleToolbar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         android:text="@string/app_name"
         android:textSize="26sp"
-        android:textStyle="italic" />
+        android:textStyle="italic" />-->
 
 
 </androidx.appcompat.widget.Toolbar>

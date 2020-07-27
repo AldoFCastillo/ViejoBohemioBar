@@ -11,8 +11,10 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
@@ -32,9 +34,13 @@ import butterknife.ButterKnife;
 public class MainActivity extends AppCompatActivity implements HomeFragment.listener, MenuFragment.listener {
 
     private FragmentManager fragmentManager;
+    private MenuFragment menuFragment;
+    private HomeFragment homeFragment;
+    private long backPressedTime;
+    private Toast backToast;
     private MenuItem menuLogin;
 
-    @BindView(R.id.toolbar)
+    @BindView(R.id.toolbarMain)
     Toolbar toolbar;
     @BindView(R.id.drawerHome)
     DrawerLayout drawerLayout;
@@ -49,7 +55,12 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        HomeFragment homeFragment = new HomeFragment();
+        ButterKnife.bind(this);
+        menuFragment = new MenuFragment();
+        setNavigationView();
+        setToolBar();
+
+        homeFragment = new HomeFragment();
         setFragment(homeFragment);
     }
 
@@ -64,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
     public void homeListener(Boolean boo) {
         if (boo) {
             setFragment(new ScannerFragment());
-        } else setFragment(new MenuFragment());
+        } else setFragment(menuFragment);
 
     }
 
@@ -72,12 +83,8 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        ButterKnife.bind(this);
 
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-
-        setNavigationView();
-        setToolBar();
 
         String text;
         if ((result != null) && (result.getContents() != null)) {
@@ -86,12 +93,12 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
         HomeFragment homeFragment = HomeFragment.newInstance(text);
         setFragment(homeFragment);
 
-        setFragment(new MenuFragment());
+        setFragment(menuFragment);
     }
 
     private void setToolBar() {
         setSupportActionBar(toolbar);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout,toolbar,R.string.open_drawer, R.string.close_drawer);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open_drawer, R.string.close_drawer);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
     }
@@ -110,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
     }
 
     private void setNavigationView() {
-       // menuLogin = navigationView.getMenu().findItem(R.id.navigationViewLoginItem);
+        // menuLogin = navigationView.getMenu().findItem(R.id.navigationViewLoginItem);
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -151,24 +158,43 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
 
     }
 
-   /* @Override
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar_menu, menu);
         return true;
-    }*/
+    }
+
 
     @Override
     public void onBackPressed() {
-        // super.onBackPressed();
-        setFragment(new HomeFragment());
+        if (backPressedTime + 2000 > System.currentTimeMillis()) {
+            backToast.cancel();
+            super.onBackPressed();
+            return;
+        } else {
+            Fragment fragment = fragmentManager.findFragmentById(R.id.containerFragmentMain);
+            if (fragment instanceof MenuFragment) {
+                setFragment(homeFragment);
+            } else {
+                if (fragment instanceof HomeFragment) {
+                    super.onBackPressed();
+                }else {
+                    setFragment(menuFragment);
+                    backToast = Toast.makeText(getBaseContext(), "Presiona atras nuevamente para salir", Toast.LENGTH_SHORT);
+                    backToast.show();
+                }
+            }
+        }
+        backPressedTime = System.currentTimeMillis();
     }
 
     @Override
     public void menuListener(Integer adapterPosition, Result result) {
         Bundle bundle = new Bundle();
-        bundle.putInt(ProductDetails.KEY_POSITION, adapterPosition);
-        bundle.putSerializable(ProductDetails.KEY_RESULT, result);
-        Intent intent = new Intent(this, ProductDetails.class);
+        bundle.putInt(ProductDetailsActivity.KEY_POSITION, adapterPosition);
+        bundle.putSerializable(ProductDetailsActivity.KEY_RESULT, result);
+        Intent intent = new Intent(this, ProductDetailsActivity.class);
         intent.putExtras(bundle);
         startActivity(intent);
     }

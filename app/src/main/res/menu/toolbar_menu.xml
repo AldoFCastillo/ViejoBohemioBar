@@ -2,10 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-   <item
-         android:id="@+id/itemToolbarYourOrder"
-         android:title="Tu Pedido"
-         app:showAsAction="always|withText"/>
+    <item
+        android:id="@+id/itemToolbarYourOrder"
+        android:orderInCategory="2"
+        android:title="Tu Pedido"
+        app:showAsAction="always|withText" />
 
 
 </menu>
