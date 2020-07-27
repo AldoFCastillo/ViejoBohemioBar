@@ -12,7 +12,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-
         <ImageView
             android:id="@+id/imageViewCell"
             android:layout_width="match_parent"
@@ -37,12 +36,12 @@
                 android:fontFamily="sans-serif"
                 android:paddingStart="10dp"
                 android:paddingEnd="10dp"
-                android:text="SuperBurguer"
-                android:textColor="#FFFFFF"
                 android:shadowColor="#000000"
                 android:shadowDx="0.0"
                 android:shadowDy="0.0"
                 android:shadowRadius="9.0"
+                android:text="SuperBurguer"
+                android:textColor="#FFFFFF"
                 android:textSize="30sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0"
@@ -59,12 +58,12 @@
                 android:paddingStart="10dp"
                 android:paddingEnd="10dp"
                 android:paddingBottom="10dp"
-                android:text="$200"
-                android:textColor="#FFFFFF"
                 android:shadowColor="#000000"
                 android:shadowDx="0.0"
                 android:shadowDy="0.0"
                 android:shadowRadius="9.0"
+                android:text="$200"
+                android:textColor="#FFFFFF"
                 android:textSize="30sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0"

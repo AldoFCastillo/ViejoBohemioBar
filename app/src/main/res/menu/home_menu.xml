@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigationViewLoginItem"
+        android:title="Login">
+        <menu>
+
+            <item
+                android:id="@+id/navigationViewPedidosPendientesItem"
+                android:title="Pedidos pendientes" />
+
+            <item
+                android:id="@+id/navigationViewPedidosPreparacionItem"
+                android:title="Pedidos en preparacion" />
+
+            <item
+                android:id="@+id/navigationViewPedidosEntregadosItem"
+                android:title="Pedidos entregados"
+                android:visible="true" />
+
+            <item
+                android:id="@+id/navigationViewCerrarSesionItem"
+                android:title="Cerrar Sesion"
+                android:visible="true" />
+
+        </menu>
+
+
+    </item>
+
+    <item
+        android:id="@+id/separadorMercado"
+        android:title="@string/app_name" >
+        <menu>
+
+            <item
+                android:id="@+id/aboutUsMenuNavigation"
+                android:title="About us" />
+        </menu>
+
+    </item>
+
+</menu>

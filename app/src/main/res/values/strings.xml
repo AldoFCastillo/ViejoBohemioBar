@@ -1,5 +1,8 @@
 <resources>
-    <string name="app_name">ViejoBohemioBar</string>
+    <string name="app_name">Viejo Bohemio Bar</string>
     <string name="menu">Menu</string>
 
+
+    <string name="open_drawer">Open Drawer</string>
+    <string name="close_drawer">Close Drawer</string>
 </resources>
