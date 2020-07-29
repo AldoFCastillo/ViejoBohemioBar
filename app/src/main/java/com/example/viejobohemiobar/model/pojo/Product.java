@@ -14,6 +14,8 @@ public class Product implements Serializable {
     private String description;
     @SerializedName("price")
     private String price;
+    @SerializedName("type")
+    private String type;
     @SerializedName("id")
     private String id;
 
@@ -58,5 +60,13 @@ public class Product implements Serializable {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

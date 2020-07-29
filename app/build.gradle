@@ -64,3 +64,4 @@ dependencies {
     implementation 'com.google.zxing:core:3.3.3'
 
 }
+apply plugin: 'com.google.gms.google-services'

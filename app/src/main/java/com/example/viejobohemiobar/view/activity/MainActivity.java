@@ -10,28 +10,40 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.example.viejobohemiobar.R;
 import com.example.viejobohemiobar.model.pojo.Result;
 import com.example.viejobohemiobar.view.fragment.HomeFragment;
 import com.example.viejobohemiobar.view.fragment.MenuFragment;
+import com.example.viejobohemiobar.view.fragment.OrderFragment;
 import com.example.viejobohemiobar.view.fragment.ScannerFragment;
+import com.example.viejobohemiobar.viewModel.ResultViewModel;
+import com.example.viejobohemiobar.viewModel.UserViewModel;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity implements HomeFragment.listener, MenuFragment.listener {
+public class MainActivity extends AppCompatActivity implements HomeFragment.listener, MenuFragment.listener, OrderFragment.listener {
+
+    public static final String KEY_RESULT = "result";
 
     private FragmentManager fragmentManager;
     private MenuFragment menuFragment;
@@ -39,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
     private long backPressedTime;
     private Toast backToast;
     private MenuItem menuLogin;
+    private Result resultOrder = new Result();
 
     @BindView(R.id.toolbarMain)
     Toolbar toolbar;
@@ -56,44 +69,19 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
         setContentView(R.layout.activity_main);
 
         ButterKnife.bind(this);
+        checkUser();
         menuFragment = new MenuFragment();
         setNavigationView();
         setToolBar();
 
-        homeFragment = new HomeFragment();
-        setFragment(homeFragment);
     }
+
 
     public void setFragment(Fragment fragment) {
         fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.containerFragmentMain, fragment);
         fragmentTransaction.commit();
-    }
-
-    @Override
-    public void homeListener(Boolean boo) {
-        if (boo) {
-            setFragment(new ScannerFragment());
-        } else setFragment(menuFragment);
-
-    }
-
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-
-        String text;
-        if ((result != null) && (result.getContents() != null)) {
-            text = result.getContents();
-        } else text = "Error";
-        HomeFragment homeFragment = HomeFragment.newInstance(text);
-        setFragment(homeFragment);
-
-        setFragment(menuFragment);
     }
 
     private void setToolBar() {
@@ -107,7 +95,18 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.itemToolbarYourOrder:
-                Toast.makeText(this, "Tu pedido", Toast.LENGTH_SHORT).show();
+                ResultViewModel resultViewModel = ViewModelProviders.of(this).get(ResultViewModel.class);
+                resultViewModel.getActualOrder().observe(this, new Observer<Result>() {
+                    @Override
+                    public void onChanged(Result result) {
+                        if (result != null) {
+                            OrderFragment orderFragment = OrderFragment.newInstance(result);
+                            setFragment(orderFragment);
+                            Toast.makeText(MainActivity.this, "Tu pedido", Toast.LENGTH_SHORT).show();
+                        } else
+                            Toast.makeText(MainActivity.this, "Aun no has agregado ningun producto", Toast.LENGTH_SHORT).show();
+                    }
+                });
                 drawerLayout.closeDrawers();
                 return true;
 
@@ -115,6 +114,18 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
                 return super.onOptionsItemSelected(item);
         }
     }
+
+    private void checkUser(){
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        String unMail = currentUser.getEmail();
+        if (currentUser!=null){
+            setFragment(new MenuFragment());
+        }else{
+            setFragment(new HomeFragment());
+        }
+    }
+
 
     private void setNavigationView() {
         // menuLogin = navigationView.getMenu().findItem(R.id.navigationViewLoginItem);
@@ -158,6 +169,20 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
 
     }
 
+    private void registerUser(String mail, String pass) {
+        UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+        userViewModel.registerUser(mail, pass).observe(this, new Observer<FirebaseUser>() {
+            @Override
+            public void onChanged(FirebaseUser firebaseUser) {
+                if (firebaseUser != null) {
+                    setFragment(new MenuFragment());
+                    Toast.makeText(MainActivity.this, "Hola! Ya podes armar tu pedido", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -179,7 +204,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
             } else {
                 if (fragment instanceof HomeFragment) {
                     super.onBackPressed();
-                }else {
+                } else {
                     setFragment(menuFragment);
                     backToast = Toast.makeText(getBaseContext(), "Presiona atras nuevamente para salir", Toast.LENGTH_SHORT);
                     backToast.show();
@@ -190,6 +215,30 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
     }
 
     @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        String table ="1";
+        /*IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+
+        String text;
+        if ((result != null) && (result.getContents() != null)) {
+            text = result.getContents();
+        } else text = "Error";*/
+        registerUser("cliente"+table+"@cliente.com","cliente"+table);
+
+    }
+
+    @Override
+    public void homeListener(Boolean boo) {
+        if (boo) {
+            setFragment(new ScannerFragment());
+        } else {
+            registerUser("cliente1@cliente.com","cliente1");
+        }
+
+    }
+
+    @Override
     public void menuListener(Integer adapterPosition, Result result) {
         Bundle bundle = new Bundle();
         bundle.putInt(ProductDetailsActivity.KEY_POSITION, adapterPosition);
@@ -197,5 +246,24 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
         Intent intent = new Intent(this, ProductDetailsActivity.class);
         intent.putExtras(bundle);
         startActivity(intent);
+    }
+
+    @Override
+    public void orderFragmentListener(Boolean confirm) {
+        //TODO fragments de confirmacion?
+        if (confirm) {
+            setFragment(new MenuFragment());
+        } else {
+            setFragment(new MenuFragment());
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ResultViewModel resultViewModel = ViewModelProviders.of(this).get(ResultViewModel.class);
+        resultViewModel.deleteActualOrder();
+
+        //TODO BORRAR USUARIO
     }
 }

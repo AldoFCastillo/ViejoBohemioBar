@@ -1,5 +1,6 @@
 package com.example.viejobohemiobar.view.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -13,11 +14,17 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.example.viejobohemiobar.R;
+import com.example.viejobohemiobar.view.fragment.MenuFragment;
+import com.example.viejobohemiobar.view.fragment.OrderFragment;
 import com.example.viejobohemiobar.view.fragment.ProductDetailsFragment;
 import com.example.viejobohemiobar.model.pojo.Product;
 import com.example.viejobohemiobar.model.pojo.Result;
+import com.example.viejobohemiobar.viewModel.ResultViewModel;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,12 +32,13 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class ProductDetailsActivity extends AppCompatActivity {
+public class ProductDetailsActivity extends AppCompatActivity  {
 
     public static final String KEY_POSITION = "position";
     public static final String KEY_RESULT = "result";
 
     private List<Product> productList = new ArrayList<>();
+    private List<Product> productListOrder;
     private FragmentManager fragmentManager;
 
     @BindView(R.id.constraintDetails)
@@ -44,6 +52,8 @@ public class ProductDetailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_product_details);
 
         ButterKnife.bind(this);
+
+        productListOrder = new ArrayList<>();
 
         setToolBar();
 
@@ -60,23 +70,6 @@ public class ProductDetailsActivity extends AppCompatActivity {
         getSupportActionBar().setHomeButtonEnabled(true);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.toolbar_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.itemToolbarYourOrder:
-                Toast.makeText(this, "Tu pedido", Toast.LENGTH_SHORT).show();
-                return true;
-
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
 
     public void setFragment(Fragment fragment) {
         fragmentManager = getSupportFragmentManager();
@@ -84,6 +77,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
         fragmentTransaction.replace(R.id.constraintDetails, fragment);
         fragmentTransaction.commit();
     }
+
 
 
 }

@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.viejobohemiobar.R;
+import com.example.viejobohemiobar.service.ConfigRecyclerView;
 import com.example.viejobohemiobar.view.adapter.ProductAdapter;
 import com.example.viejobohemiobar.model.pojo.Product;
 import com.example.viejobohemiobar.model.pojo.Result;
@@ -71,7 +72,7 @@ public class MenuFragment extends Fragment implements ProductAdapter.adapterList
 
         ButterKnife.bind(this, view);
 
-        initRecycler();
+        recyclerView = ConfigRecyclerView.getRecyclerView(recyclerView, getContext());
 
         ResultViewModel resultViewModel = ViewModelProviders.of(this).get(ResultViewModel.class);
 
@@ -88,13 +89,7 @@ public class MenuFragment extends Fragment implements ProductAdapter.adapterList
         return view;
     }
 
-    private void initRecycler() {
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setItemViewCacheSize(7);
 
-    }
 
     @Override
     public void selection(Integer adapterPosition, Result result) {

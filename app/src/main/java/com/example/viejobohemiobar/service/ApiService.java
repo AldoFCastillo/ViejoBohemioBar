@@ -9,7 +9,7 @@ import retrofit2.http.Query;
 
 public interface ApiService {
 
-    //TODO revisar
+
 
     @GET("raw/{path}")
     Call<Result> getResult(@Path("path") String path, @Query("offset") Integer offset);

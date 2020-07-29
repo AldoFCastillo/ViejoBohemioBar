@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "715416173105",
+    "firebase_url": "https://viejo-bohemio-bar.firebaseio.com",
+    "project_id": "viejo-bohemio-bar",
+    "storage_bucket": "viejo-bohemio-bar.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:715416173105:android:d7fb7d93fd36efba623310",
+        "android_client_info": {
+          "package_name": "com.example.viejobohemiobar"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "715416173105-24c4pljj5a81dpgs9s63djuur82k6ov9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.viejobohemiobar",
+            "certificate_hash": "914d0eb6e7add68a0215c26cec40594c74c2546a"
+          }
+        },
+        {
+          "client_id": "715416173105-moioad55r6g78af5mhmuonkak9t4c32c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAtS87kVk6gP9YPE4RbVOUa8-PNeF0r0zE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "715416173105-moioad55r6g78af5mhmuonkak9t4c32c.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
