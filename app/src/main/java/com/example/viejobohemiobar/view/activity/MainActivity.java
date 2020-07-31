@@ -50,7 +50,8 @@ import butterknife.ButterKnife;
 public class MainActivity extends AppCompatActivity implements HomeFragment.listener, MenuFragment.listener, OrderFragment.listener {
 
     private FragmentManager fragmentManager;
-    private MenuFragment menuFragment = new MenuFragment();;
+    private MenuFragment menuFragment = new MenuFragment();
+    ;
     private HomeFragment homeFragment;
     private long backPressedTime;
     private Toast backToast;
@@ -58,14 +59,13 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
     MenuItem yourOrder;
 
     @BindView(R.id.toolbarMain)
-    Toolbar toolbar;
+    public Toolbar toolbar;
     @BindView(R.id.drawerHome)
     DrawerLayout drawerLayout;
     @BindView(R.id.navigationViewHome)
     NavigationView navigationView;
     @BindView(R.id.mainLayout)
     ConstraintLayout mainLayout;
-
 
 
     @Override
@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
 
         ButterKnife.bind(this);
         setToolBar();
-        checkUser();
+        //checkUser();
         setNavigationView();
 
     }
@@ -125,7 +125,6 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
-            yourOrder.setVisible(true);
             setFragment(new MenuFragment());
         } else {
             setFragment(new HomeFragment());
@@ -181,8 +180,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
             @Override
             public void onChanged(FirebaseUser firebaseUser) {
                 if (firebaseUser != null) {
-                    //checkUser();
-                    yourOrder.setVisible(true);
+
                     setFragment(new MenuFragment());
                     Toast.makeText(MainActivity.this, "Hola! Ya podes armar tu pedido", Toast.LENGTH_SHORT).show();
                 }
@@ -195,8 +193,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar_menu, menu);
-        yourOrder = menu.findItem(R.id.itemToolbarYourOrder);
-        yourOrder.setVisible(false);
+        checkUser();
         return true;
     }
 
@@ -205,8 +202,6 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
     public void onBackPressed() {
         if (backPressedTime + 2000 > System.currentTimeMillis()) {
             backToast.cancel();
-            resetOrder();
-            yourOrder.setVisible(false);
             setFragment(new HomeFragment());
             return;
         } else {
@@ -218,7 +213,6 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
                 if (fragment instanceof HomeFragment) {
                     super.onBackPressed();
                 } else {
-                    yourOrder.setVisible(true);
                     setFragment(menuFragment);
 
                 }
@@ -262,40 +256,39 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
     }
 
     @Override
-    public void orderFragmentListener(Boolean confirm) {
+    public void orderFragmentListener() {
         //TODO fragments de confirmacion. SU PEDIDO HA SIDO CONFIRMADO, PRONTO SERA LLEVADO A SU MESA(SI DESEA HACER UN NUEVO PEDIDO VUELVA A CAPTURAR EL CODIGO QR DE SU MESA)
         //TODO lottie de espera
-        //TODO viewpagerdetails
         //TODO pestañas menu
 
-        if (confirm) {
-            resetOrder();
-        }
         checkUser();
     }
 
 
-    private void resetOrder() {
+    public void resetOrder() {
+
         ResultViewModel resultViewModel = ViewModelProviders.of(this).get(ResultViewModel.class);
         resultViewModel.deleteActualOrder();
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser firebaseUser = mAuth.getCurrentUser();
-        AuthCredential authCredential = EmailAuthProvider.getCredential("user@example.com", "password1234");
+        if(firebaseUser!=null) {
+            AuthCredential authCredential = EmailAuthProvider.getCredential("user@example.com", "password1234");
 
-        firebaseUser.reauthenticate(authCredential).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                firebaseUser.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            Toast.makeText(MainActivity.this, "ELIMINADO", Toast.LENGTH_SHORT).show();
+            firebaseUser.reauthenticate(authCredential).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    firebaseUser.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                Toast.makeText(MainActivity.this, "ELIMINADO", Toast.LENGTH_SHORT).show();
+                            }
                         }
-                    }
-                });
-            }
-        });
-        mAuth.signOut();
+                    });
+                }
+            });
+        }
+      //  mAuth.signOut();
     }
 
     @Override

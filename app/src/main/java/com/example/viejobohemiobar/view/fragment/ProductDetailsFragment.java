@@ -78,11 +78,11 @@ public class ProductDetailsFragment extends Fragment {
 
         resultViewModel = ViewModelProviders.of(this).get(ResultViewModel.class);
 
-
         textViewTitleDetails.setText(product.getTitle());
         textViewPriceDetails.setText(product.getPrice());
         textViewDescriptionDetails.setText(product.getDescription());
         Glide.with(view).load(product.getPicture()).into(imageViewDetails);
+
         floatingAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

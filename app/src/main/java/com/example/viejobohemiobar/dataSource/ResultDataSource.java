@@ -81,7 +81,7 @@ public class ResultDataSource {
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
         String id;
-        if(path.equals(pending)){
+        if(path.equals(pending) || currentUser==null){
             id=pending;
         }else{ id = currentUser.getEmail();}
         FirebaseFirestore db = FirebaseFirestore.getInstance();

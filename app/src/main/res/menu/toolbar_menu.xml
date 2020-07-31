@@ -6,7 +6,8 @@
         android:id="@+id/itemToolbarYourOrder"
         android:orderInCategory="2"
         android:title="Tu Pedido"
-        app:showAsAction="always|withText" />
+        app:showAsAction="always|withText"
+        android:visible="false"/>
 
 
 </menu>

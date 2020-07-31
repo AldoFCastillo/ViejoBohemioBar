@@ -9,9 +9,12 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
 import com.example.viejobohemiobar.R;
+import com.example.viejobohemiobar.view.activity.MainActivity;
+import com.google.firebase.auth.FirebaseAuth;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -29,6 +32,7 @@ public class HomeFragment extends Fragment {
     Button buttonScan;
     @BindView(R.id.textViewHome)
     TextView textViewHome;
+
 
     //TODO BORRAR
 
@@ -67,6 +71,12 @@ public class HomeFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         ButterKnife.bind(this, view);
+
+        MainActivity main = (MainActivity) getActivity();
+        main.toolbar.getMenu().findItem(R.id.itemToolbarYourOrder).setVisible(false);
+        main.resetOrder();
+        /*FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        if (mAuth!=null){mAuth.signOut();}*/
 
         textViewHome.setText(mParam1);
 

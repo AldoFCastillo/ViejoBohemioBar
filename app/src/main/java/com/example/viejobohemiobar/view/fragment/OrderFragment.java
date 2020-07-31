@@ -144,7 +144,7 @@ public class OrderFragment extends Fragment implements ProductAdapter.adapterLis
                     public void onChanged(Boolean aBoolean) {
                         if (aBoolean) {
                             Toast.makeText(getContext(), "Pedido Cancelado", Toast.LENGTH_SHORT).show();
-                            listener.orderFragmentListener(false);
+                            listener.orderFragmentListener();
                         } else
                             Toast.makeText(getContext(), "Ocurrio un error", Toast.LENGTH_SHORT).show();
                     }
@@ -171,7 +171,7 @@ public class OrderFragment extends Fragment implements ProductAdapter.adapterLis
                 if (aBoolean) {
                     Toast.makeText(getContext(), "Pedido Confirmado", Toast.LENGTH_SHORT).show();
                     deleteActualOrder();
-                    listener.orderFragmentListener(true);
+                    listener.orderFragmentListener();
                 } else Toast.makeText(getContext(), "Ocurrio un error", Toast.LENGTH_SHORT).show();
             }
         });
@@ -201,6 +201,6 @@ public class OrderFragment extends Fragment implements ProductAdapter.adapterLis
     }
 
     public interface listener {
-        void orderFragmentListener(Boolean confirm);
+        void orderFragmentListener();
     }
 }

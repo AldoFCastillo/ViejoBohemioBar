@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -16,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.viejobohemiobar.R;
 import com.example.viejobohemiobar.service.ConfigRecyclerView;
+import com.example.viejobohemiobar.view.activity.MainActivity;
 import com.example.viejobohemiobar.view.adapter.ProductAdapter;
 import com.example.viejobohemiobar.model.pojo.Product;
 import com.example.viejobohemiobar.model.pojo.Result;
@@ -35,6 +37,7 @@ public class MenuFragment extends Fragment implements ProductAdapter.adapterList
 
     @BindView(R.id.recyclerMenuFragment)
     RecyclerView recyclerView;
+
 
     public MenuFragment() {
         // Required empty public constructor
@@ -71,6 +74,8 @@ public class MenuFragment extends Fragment implements ProductAdapter.adapterList
         View view = inflater.inflate(R.layout.fragment_menu, container, false);
 
         ButterKnife.bind(this, view);
+        MainActivity main = (MainActivity) getActivity();
+        main.toolbar.getMenu().findItem(R.id.itemToolbarYourOrder).setVisible(true);
 
         recyclerView = ConfigRecyclerView.getRecyclerView(recyclerView, getContext());
 
