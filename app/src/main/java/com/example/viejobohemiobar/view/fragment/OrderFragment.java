@@ -121,12 +121,15 @@ public class OrderFragment extends Fragment implements ProductAdapter.adapterLis
                     @Override
                     public void onChanged(OrderLog orderLog) {
                         List<Order> orderList;
-                        if (orderLog.getOrderList() == null) {
+                        if (orderLog == null) {
+                            orderLog = new OrderLog();
                             orderList = new ArrayList<>();
                         } else orderList = orderLog.getOrderList();
                         orderList.add(order);
                         orderLog.setOrderList(orderList);
                         updateOrderLog(orderLog);
+
+                        //TODO PEDIR PASSWORD
                     }
                 });
 

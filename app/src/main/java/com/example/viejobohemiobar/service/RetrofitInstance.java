@@ -1,5 +1,8 @@
 package com.example.viejobohemiobar.service;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -25,7 +28,7 @@ public class RetrofitInstance {
         return retrofitInstance;
     }
 
-    public ApiService getMercadoApiService() {
+    public ApiService getApiService() {
         return retrofit.create(ApiService.class);
 
     }

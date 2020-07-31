@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.viejobohemiobar.model.pojo.Order;
 import com.example.viejobohemiobar.model.pojo.OrderLog;
 import com.example.viejobohemiobar.service.RetrofitInstance;
 import com.example.viejobohemiobar.model.pojo.Result;
@@ -21,19 +22,18 @@ import retrofit2.Response;
 
 public class ResultDataSource {
 
-    public static final int LIMIT = 7;
     private static final int FIRST_PAGE = 0;
-    public static final String PATH = "hw1sVJ3j";
+    public static final String PATH = "34BGgFCk";
     private MutableLiveData<Result> liveResult;
     private String pending = "pending orders";
-    private String order = "actual order";
+    private String order = "actual orders";
 
 
     public LiveData<Result> getProducts() {
 
         liveResult = new MutableLiveData<>();
         RetrofitInstance.getInstance()
-                .getMercadoApiService()
+                .getApiService()
                 .getResult(PATH, FIRST_PAGE)
                 .enqueue(new Callback<Result>() {
                     @Override
@@ -69,7 +69,8 @@ public class ResultDataSource {
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                liveOrderLog.setValue(new OrderLog());
+                OrderLog orderLog = null;
+                liveOrderLog.setValue(orderLog);
             }
         });
         return liveOrderLog;
@@ -80,9 +81,9 @@ public class ResultDataSource {
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
         String id;
-        if (currentUser != null) {
-            id = currentUser.getUid();
-        } else id = "actual user";
+        if(path.equals(pending)){
+            id=pending;
+        }else{ id = currentUser.getEmail();}
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         return db.collection(path).document(id);
     }
@@ -114,7 +115,8 @@ public class ResultDataSource {
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                liveResult.setValue(null);
+                Result result = null;
+                liveResult.setValue(result);
             }
         });
         return liveResult;
@@ -136,7 +138,7 @@ public class ResultDataSource {
         return liveBool;
     }
 
-    public LiveData<Boolean> deleteActualOrder(){
+    public LiveData<Boolean> deleteActualOrder() {
         MutableLiveData<Boolean> liveBool = new MutableLiveData<>();
         getDocumentReference(order).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
