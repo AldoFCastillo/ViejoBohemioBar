@@ -74,9 +74,8 @@ public class HomeFragment extends Fragment {
 
         MainActivity main = (MainActivity) getActivity();
         main.toolbar.getMenu().findItem(R.id.itemToolbarYourOrder).setVisible(false);
-        main.resetOrder();
-        /*FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        if (mAuth!=null){mAuth.signOut();}*/
+//        main.resetOrder();
+
 
         textViewHome.setText(mParam1);
 

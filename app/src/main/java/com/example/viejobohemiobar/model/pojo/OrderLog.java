@@ -1,9 +1,10 @@
 package com.example.viejobohemiobar.model.pojo;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OrderLog {
+public class OrderLog implements Serializable {
 
     private List<Order> orderList;
 

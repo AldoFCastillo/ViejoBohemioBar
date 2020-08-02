@@ -1,7 +1,6 @@
 package com.example.viejobohemiobar.view.fragment;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -27,14 +26,11 @@ import com.example.viejobohemiobar.model.pojo.OrderLog;
 import com.example.viejobohemiobar.model.pojo.Product;
 import com.example.viejobohemiobar.model.pojo.Result;
 import com.example.viejobohemiobar.service.ConfigRecyclerView;
-import com.example.viejobohemiobar.view.activity.MainActivity;
 import com.example.viejobohemiobar.view.adapter.ProductAdapter;
 import com.example.viejobohemiobar.viewModel.ResultViewModel;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -44,14 +40,19 @@ import butterknife.ButterKnife;
 
 public class OrderFragment extends Fragment implements ProductAdapter.adapterListener {
 
-    private static final String ARG_RESULT = "param1";
+    private static final String ARG_SERIAL = "serial";
+    public static final String ARG_PATH = "path";
 
 
     private Result result;
+    private Order order;
     private ProductAdapter productAdapter;
     private String table = "1";
     private ResultViewModel resultViewModel;
     private listener listener;
+    private String path;
+    private String button;
+    private String next;
 
     @BindView(R.id.recyclerViewOrder)
     RecyclerView recyclerViewOrder;
@@ -65,25 +66,34 @@ public class OrderFragment extends Fragment implements ProductAdapter.adapterLis
     CheckBox checkBoxNeedWait;
     @BindView(R.id.textViewTotalOrder)
     TextView textViewTotalOrder;
+    @BindView(R.id.buttonToProcessOrder)
+    Button buttonToProcessOrder;
 
     public OrderFragment() {
         // Required empty public constructor
     }
 
-    public static OrderFragment newInstance(Result result) {
+    public static OrderFragment newInstance(Serializable result, String path) {
         OrderFragment fragment = new OrderFragment();
         Bundle args = new Bundle();
-        args.putSerializable(ARG_RESULT, result);
+        args.putSerializable(ARG_SERIAL, result);
+        args.putString(ARG_PATH, path);
         fragment.setArguments(args);
         return fragment;
     }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            this.result = (Result) getArguments().getSerializable(ARG_RESULT);
-
+            if (getArguments().getSerializable(ARG_SERIAL) instanceof Result) {
+                this.result = (Result) getArguments().getSerializable(ARG_SERIAL);
+                this.order = null;
+            } else{
+                this.order = (Order) getArguments().getSerializable(ARG_SERIAL);
+                this.path = getArguments().getString(ARG_PATH);
+            }
         }
     }
 
@@ -96,8 +106,74 @@ public class OrderFragment extends Fragment implements ProductAdapter.adapterLis
 
         resultViewModel = ViewModelProviders.of(this).get(ResultViewModel.class);
         recyclerViewOrder = ConfigRecyclerView.getRecyclerView(recyclerViewOrder, getContext());
+
+        if (order != null) {
+            setMadeOrder();
+        } else setToConfirmOrder();
+
+
+        return view;
+    }
+
+    private void setMadeOrder() {
+        productAdapter = new ProductAdapter(OrderFragment.this, order.getResult().getResults());
+        recyclerViewOrder.setAdapter(productAdapter);
+        switch(path){
+            case "p": button = "Tomar Pedido";
+            next = "i";
+                break;
+            case "i": button = "Pedido Entregado";
+                next = "c";
+                break;
+            case "c": button = "Eliminar Pedido";
+                break;
+        }
+        buttonConfirmOrder.setText(button);
+        buttonConfirmOrder.setVisibility(View.VISIBLE);
+        buttonConfirmOrder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                transferOrderToProcess();
+            }
+        });
+
+        textViewTotalOrder.setText(order.getTotal());
+        //set RadioButtons
+        editTextCommentsOrder.setText(order.getComments());
+        checkBoxNeedWait.setActivated(order.getCallWait());
+        buttonCancelOrder.setVisibility(View.INVISIBLE);
+        buttonConfirmOrder.setVisibility(View.INVISIBLE);
+    }
+
+    private void transferOrderToProcess(){
+        resultViewModel.getOrderLog(path).observe(getViewLifecycleOwner(), new Observer<OrderLog>() {
+            @Override
+            public void onChanged(OrderLog orderLog) {
+                List<Order> orderList = orderLog.getOrderList();
+                orderList.remove(order);
+                orderLog.setOrderList(orderList);
+                resultViewModel.updateOrderLog(orderLog, path);
+                resultViewModel.getOrderLog(next).observe(getViewLifecycleOwner(), new Observer<OrderLog>() {
+                    @Override
+                    public void onChanged(OrderLog orderLog) {
+                        List<Order> orderList = orderLog.getOrderList();
+                        orderList.add(order);
+                        orderLog.setOrderList(orderList);
+                        resultViewModel.updateOrderLog(orderLog, next);
+                    }
+                });
+                //back to StaffFragment
+            }
+        });
+    }
+
+    private void setToConfirmOrder() {
         productAdapter = new ProductAdapter(OrderFragment.this, result.getResults());
         recyclerViewOrder.setAdapter(productAdapter);
+
+        buttonToProcessOrder.setVisibility(View.INVISIBLE);
+        buttonCancelOrder.setVisibility(View.VISIBLE);
+        buttonConfirmOrder.setVisibility(View.VISIBLE);
 
         Double total = 0.0;
         for (Product product : result.getResults()) {
@@ -113,25 +189,10 @@ public class OrderFragment extends Fragment implements ProductAdapter.adapterLis
             public void onClick(View v) {
 
                 String comments = editTextCommentsOrder.getText().toString();
-                String id = "id" + Math.random(); //get id firestore
-
+                FirebaseAuth fAuth = FirebaseAuth.getInstance();
+                String id = fAuth.getUid();
                 Order order = Order.getOrderInstance(result, stringTotal, true, checkBoxNeedWait.isChecked(), comments, id, table, getTime());
-
-                resultViewModel.getOrderLog().observe(getViewLifecycleOwner(), new Observer<OrderLog>() {
-                    @Override
-                    public void onChanged(OrderLog orderLog) {
-                        List<Order> orderList;
-                        if (orderLog == null) {
-                            orderLog = new OrderLog();
-                            orderList = new ArrayList<>();
-                        } else orderList = orderLog.getOrderList();
-                        orderList.add(order);
-                        orderLog.setOrderList(orderList);
-                        updateOrderLog(orderLog);
-
-                        //TODO PEDIR PASSWORD
-                    }
-                });
+                confirmOrder(order, "p");
 
             }
         });
@@ -152,7 +213,6 @@ public class OrderFragment extends Fragment implements ProductAdapter.adapterLis
             }
         });
 
-        return view;
     }
 
 
@@ -164,8 +224,26 @@ public class OrderFragment extends Fragment implements ProductAdapter.adapterLis
         return time;
     }
 
-    private void updateOrderLog(OrderLog orderLog) {
-        resultViewModel.updateOrderLog(orderLog).observe(this, new Observer<Boolean>() {
+    private void confirmOrder(Order order, String path) {
+        resultViewModel.getOrderLog(path).observe(getViewLifecycleOwner(), new Observer<OrderLog>() {
+            @Override
+            public void onChanged(OrderLog orderLog) {
+                List<Order> orderList;
+                if (orderLog == null) {
+                    orderLog = new OrderLog();
+                    orderList = new ArrayList<>();
+                } else orderList = orderLog.getOrderList();
+                orderList.add(order);
+                orderLog.setOrderList(orderList);
+                updateOrderLog(orderLog, "p");
+
+                //TODO PEDIR PASSWORD
+            }
+        });
+    }
+
+    private void updateOrderLog(OrderLog orderLog, String path) {
+        resultViewModel.updateOrderLog(orderLog, path).observe(this, new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean aBoolean) {
                 if (aBoolean) {

@@ -88,19 +88,6 @@ public class ProductAdapter extends RecyclerView.Adapter {
         }
     }
 
-    private String getPriceWithFormat(Product product) {
-        String stringPrice = product.getPrice();
-        NumberFormat formatoImporte = NumberFormat.getCurrencyInstance();
-        Double c = Double.parseDouble(stringPrice);
-        String price = formatoImporte.format(c);
-        if (price.endsWith(".00")) {
-            int centsIndex = price.lastIndexOf(".00");
-            if (centsIndex != -1) {
-                price ="$"+ price.substring(1, centsIndex);
-            }
-        }
-        return price;
-    }
 
 
     public interface adapterListener {

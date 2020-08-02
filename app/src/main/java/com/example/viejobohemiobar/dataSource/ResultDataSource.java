@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.viejobohemiobar.model.pojo.Order;
 import com.example.viejobohemiobar.model.pojo.OrderLog;
 import com.example.viejobohemiobar.service.RetrofitInstance;
 import com.example.viejobohemiobar.model.pojo.Result;
@@ -26,7 +25,9 @@ public class ResultDataSource {
     public static final String PATH = "34BGgFCk";
     private MutableLiveData<Result> liveResult;
     private String pending = "pending orders";
-    private String order = "actual orders";
+    private String process = "in process orders";
+    private String closed = "closed orders";
+    private String actual = "actual orders";
 
 
     public LiveData<Result> getProducts() {
@@ -58,9 +59,12 @@ public class ResultDataSource {
     }
 
 
-    public LiveData<OrderLog> getOrderLog() {
+    public LiveData<OrderLog> getOrderLog(String path) {
+
+        path = stringToPath(path);
+
         MutableLiveData<OrderLog> liveOrderLog = new MutableLiveData<>();
-        DocumentReference docRef = getDocumentReference(pending);
+        DocumentReference docRef = getDocumentReference(path);
         docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -76,6 +80,18 @@ public class ResultDataSource {
         return liveOrderLog;
     }
 
+    private String stringToPath(String path){
+        switch(path){
+            case "p": path = pending;
+                break;
+            case "i": path = process;
+                break;
+            case "c": path = closed;
+                break;
+        }
+        return path;
+    }
+
 
     private DocumentReference getDocumentReference(String path) {
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
@@ -88,7 +104,7 @@ public class ResultDataSource {
         return db.collection(path).document(id);
     }
 
-    public LiveData<Boolean> updateOrderLog(OrderLog orderLog) {
+    public LiveData<Boolean> updateOrderLog(OrderLog orderLog, String path) {
         MutableLiveData<Boolean> liveBool = new MutableLiveData<>();
         getDocumentReference(pending).set(orderLog).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
@@ -106,7 +122,7 @@ public class ResultDataSource {
 
     public LiveData<Result> getActualOrder() {
         MutableLiveData<Result> liveResult = new MutableLiveData<>();
-        DocumentReference docRef = getDocumentReference(order);
+        DocumentReference docRef = getDocumentReference(actual);
         docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -124,7 +140,7 @@ public class ResultDataSource {
 
     public LiveData<Boolean> setActualOrder(Result result) {
         MutableLiveData<Boolean> liveBool = new MutableLiveData<>();
-        getDocumentReference(order).set(result).addOnSuccessListener(new OnSuccessListener<Void>() {
+        getDocumentReference(actual).set(result).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 liveBool.setValue(true);
@@ -140,7 +156,7 @@ public class ResultDataSource {
 
     public LiveData<Boolean> deleteActualOrder() {
         MutableLiveData<Boolean> liveBool = new MutableLiveData<>();
-        getDocumentReference(order).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+        getDocumentReference(actual).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 liveBool.setValue(true);

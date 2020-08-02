@@ -1,42 +1,37 @@
 package com.example.viejobohemiobar.view.fragment;
 
-import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.widget.Toolbar;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 
 import com.example.viejobohemiobar.R;
-import com.example.viejobohemiobar.service.ConfigRecyclerView;
 import com.example.viejobohemiobar.view.activity.MainActivity;
-import com.example.viejobohemiobar.view.adapter.ProductAdapter;
-import com.example.viejobohemiobar.model.pojo.Product;
 import com.example.viejobohemiobar.model.pojo.Result;
-import com.example.viejobohemiobar.viewModel.ResultViewModel;
-
-import java.util.List;
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.tabs.TabLayout;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MenuFragment extends Fragment implements ProductAdapter.adapterListener{
+public class MenuFragment extends Fragment {
 
     private static final String ARG_LIST = "productList";
-    private List<Product> productList;
-    private ProductAdapter productAdapter;
-    private listener listener;
 
-    @BindView(R.id.recyclerMenuFragment)
-    RecyclerView recyclerView;
+    @BindView(R.id.viewPagerMenuTabs)
+    ViewPager viewPagerMenuTabs;
+    @BindView(R.id.appBarMenu)
+    AppBarLayout appBarMenu;
+
+
 
 
     public MenuFragment() {
@@ -51,18 +46,14 @@ public class MenuFragment extends Fragment implements ProductAdapter.adapterList
         return fragment;
     }
 
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        this.listener = (listener) context;
-    }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             Result result=(Result) getArguments().getSerializable(ARG_LIST);
-            productList = result.getResults();
+           // productList = result.getResults();
         }
 
     }
@@ -72,38 +63,69 @@ public class MenuFragment extends Fragment implements ProductAdapter.adapterList
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_menu, container, false);
-
         ButterKnife.bind(this, view);
+
         MainActivity main = (MainActivity) getActivity();
         main.toolbar.getMenu().findItem(R.id.itemToolbarYourOrder).setVisible(true);
 
-        recyclerView = ConfigRecyclerView.getRecyclerView(recyclerView, getContext());
+        TabLayout tabLayout = new TabLayout(getActivity());
+        tabLayout.setTabTextColors(Color.parseColor("#000000"), Color.parseColor("#000000"));
+        appBarMenu.addView(tabLayout);
 
-        ResultViewModel resultViewModel = ViewModelProviders.of(this).get(ResultViewModel.class);
+        ViewPagerAdapterTabs viewPagerAdapterTabs = new ViewPagerAdapterTabs(getChildFragmentManager());
+        viewPagerMenuTabs.setAdapter(viewPagerAdapterTabs);
 
-        resultViewModel.getResults().observe(this, new Observer<Result>() {
-            @Override
-            public void onChanged(Result result) {
-                productList = result.getResults();
-                productAdapter = new ProductAdapter(MenuFragment.this, productList);
-                recyclerView.setAdapter(productAdapter);
+        tabLayout.setupWithViewPager(viewPagerMenuTabs);
 
-            }
-        });
 
         return view;
     }
 
 
 
-    @Override
-    public void selection(Integer adapterPosition, Result result) {
-        Toast.makeText(getContext(), productList.get(adapterPosition).getTitle(), Toast.LENGTH_SHORT).show();
-        listener.menuListener(adapterPosition, result);
 
-    }
 
-    public interface listener{
-        void menuListener(Integer adapterPosition, Result result);
+    public class ViewPagerAdapterTabs extends FragmentStatePagerAdapter {
+
+        String[] titlePages = {"Hamburguesas","Extras","Bebidas"};
+
+
+        public ViewPagerAdapterTabs(@NonNull FragmentManager fm) {
+            super(fm);
+        }
+
+        @NonNull
+        @Override
+        public Fragment getItem(int position) {
+            RecyclerMenuFragment recyclerMenuFragment;
+            switch(position){
+                case 0 :
+                    recyclerMenuFragment = RecyclerMenuFragment.newInstance("1");
+                    return recyclerMenuFragment;
+                case 1 :
+                    recyclerMenuFragment = RecyclerMenuFragment.newInstance("2");
+                    return recyclerMenuFragment;
+                case 2 :
+                    recyclerMenuFragment = RecyclerMenuFragment.newInstance("3");
+                    return recyclerMenuFragment;
+            }
+
+            return null;
+        }
+
+        @Override
+        public int getCount() {
+            return 3;
+        }
+
+        @Nullable
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return titlePages[position];
+        }
+
+
+
+
     }
 }

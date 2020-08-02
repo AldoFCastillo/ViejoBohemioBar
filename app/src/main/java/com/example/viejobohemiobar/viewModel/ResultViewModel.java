@@ -23,15 +23,15 @@ public class ResultViewModel extends ViewModel {
     }
 
 
-    public LiveData<OrderLog> getOrderLog() {
+    public LiveData<OrderLog> getOrderLog(String path) {
 
-        return resultDataSource.getOrderLog();
+        return resultDataSource.getOrderLog(path);
     }
 
 
-    public LiveData<Boolean> updateOrderLog(OrderLog orderLog) {
+    public LiveData<Boolean> updateOrderLog(OrderLog orderLog, String path) {
 
-        return resultDataSource.updateOrderLog(orderLog);
+        return resultDataSource.updateOrderLog(orderLog, path);
     }
 
     public LiveData<Result> getActualOrder() {

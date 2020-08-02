@@ -11,6 +11,19 @@
         android:layout_height="wrap_content">
 
         <Button
+            android:id="@+id/buttonToProcessOrder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:layout_marginBottom="38dp"
+            android:text="Tomar pedido"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/buttonConfirmOrder"
+            app:layout_constraintStart_toStartOf="@id/buttonCancelOrder"
+            app:layout_constraintTop_toBottomOf="@id/checkBoxNeedWait" />
+
+        <Button
             android:id="@+id/buttonCancelOrder"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -45,6 +58,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/textViewTitleOrder" />
 
+
         <Button
             android:id="@+id/buttonConfirmOrder"
             android:layout_width="wrap_content"
@@ -53,7 +67,7 @@
             android:layout_marginBottom="38dp"
             android:text="Confirmar Pedido"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/buttonCancelOrder"/>
+            app:layout_constraintTop_toTopOf="@id/buttonCancelOrder" />
 
         <RadioGroup
             android:id="@+id/radioGroupOrder"
@@ -83,14 +97,14 @@
             android:id="@+id/editTextCommentsOrder"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
-            android:inputType="textMultiLine"
-            android:imeOptions="actionDone"
             android:layout_marginTop="10dp"
             android:background="@null"
             android:gravity="top|start"
+            android:hint="Deja tu comentario"
+            android:imeOptions="actionDone"
+            android:inputType="textMultiLine"
             android:lines="3"
             android:padding="16dp"
-            android:hint="Deja tu comentario"
             app:layout_constraintEnd_toEndOf="@id/recyclerViewOrder"
             app:layout_constraintStart_toStartOf="@id/textViewTitleCommentsOrder"
             app:layout_constraintTop_toBottomOf="@id/textViewTitleCommentsOrder" />

@@ -10,6 +10,8 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -27,14 +29,18 @@ import com.example.viejobohemiobar.model.pojo.Result;
 import com.example.viejobohemiobar.view.fragment.HomeFragment;
 import com.example.viejobohemiobar.view.fragment.MenuFragment;
 import com.example.viejobohemiobar.view.fragment.OrderFragment;
+import com.example.viejobohemiobar.view.fragment.RecyclerMenuFragment;
 import com.example.viejobohemiobar.view.fragment.ScannerFragment;
 import com.example.viejobohemiobar.viewModel.ResultViewModel;
 import com.example.viejobohemiobar.viewModel.UserViewModel;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
@@ -47,7 +53,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity implements HomeFragment.listener, MenuFragment.listener, OrderFragment.listener {
+public class MainActivity extends AppCompatActivity implements HomeFragment.listener, RecyclerMenuFragment.listener, OrderFragment.listener {
 
     private FragmentManager fragmentManager;
     private MenuFragment menuFragment = new MenuFragment();
@@ -56,7 +62,11 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
     private long backPressedTime;
     private Toast backToast;
     private Result resultOrder = new Result();
-    MenuItem yourOrder;
+    private String mail;
+    private String pass;
+    private FirebaseUser firebaseUser;
+
+
 
     @BindView(R.id.toolbarMain)
     public Toolbar toolbar;
@@ -75,17 +85,19 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
 
         ButterKnife.bind(this);
         setToolBar();
-        //checkUser();
         setNavigationView();
 
     }
 
+    public Toolbar getToolbar() {
+        return toolbar;
+    }
 
     public void setFragment(Fragment fragment) {
-        fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.containerFragmentMain, fragment);
-        fragmentTransaction.commit();
+            fragmentManager = getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.containerFragmentMain, fragment);
+            fragmentTransaction.commit();
     }
 
     private void setToolBar() {
@@ -105,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
                     @Override
                     public void onChanged(Result result) {
                         if (result != null) {
-                            OrderFragment orderFragment = OrderFragment.newInstance(result);
+                            OrderFragment orderFragment = OrderFragment.newInstance(result, "");
                             setFragment(orderFragment);
                             Toast.makeText(MainActivity.this, "Tu pedido", Toast.LENGTH_SHORT).show();
                         } else
@@ -140,8 +152,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.navigationViewPedidosPendientesItem:
-                        // setFragment(new ProfileFragment());
-                        Snackbar.make(mainLayout, "Pedidos pendientes", Snackbar.LENGTH_LONG).show();
+                        goStaffActivity("p");
                         break;
 
                     case R.id.navigationViewPedidosPreparacionItem:
@@ -174,13 +185,20 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
 
     }
 
+    private void goStaffActivity(String path) {
+        Intent intent = new Intent(this, StaffActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putString(StaffActivity.KEY_PATH, path);
+        intent.putExtras(bundle);
+        startActivity(intent);
+    }
+
     private void registerUser(String mail, String pass) {
         UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         userViewModel.registerUser(mail, pass).observe(this, new Observer<FirebaseUser>() {
             @Override
             public void onChanged(FirebaseUser firebaseUser) {
                 if (firebaseUser != null) {
-
                     setFragment(new MenuFragment());
                     Toast.makeText(MainActivity.this, "Hola! Ya podes armar tu pedido", Toast.LENGTH_SHORT).show();
                 }
@@ -225,13 +243,17 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         String table = "1";
+
         /*IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
 
         String text;
         if ((result != null) && (result.getContents() != null)) {
             text = result.getContents();
         } else text = "Error";*/
-        registerUser("mesa" + table + "@cliente.com", "cliente" + table);
+        mail = "mesa" + table + "@cliente.com";
+        pass = "cliente" + table;
+        resetOrder();
+        registerUser(mail, pass);
 
     }
 
@@ -240,12 +262,20 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
         if (boo) {
             setFragment(new ScannerFragment());
         } else {
-            registerUser("mesa1@cliente.com", "cliente1");
+            mail = "mesa1@cliente.com";
+            pass = "cliente1";
+            resetOrder().observe(this, new Observer<Boolean>() {
+                @Override
+                public void onChanged(Boolean aBoolean) {
+                    registerUser(mail, pass);
+                }
+            });
+
         }
 
     }
 
-    @Override
+   /* @Override
     public void menuListener(Integer adapterPosition, Result result) {
         Bundle bundle = new Bundle();
         bundle.putInt(ProductDetailsActivity.KEY_POSITION, adapterPosition);
@@ -253,47 +283,79 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
         Intent intent = new Intent(this, ProductDetailsActivity.class);
         intent.putExtras(bundle);
         startActivity(intent);
-    }
+    }*/
 
     @Override
     public void orderFragmentListener() {
         //TODO fragments de confirmacion. SU PEDIDO HA SIDO CONFIRMADO, PRONTO SERA LLEVADO A SU MESA(SI DESEA HACER UN NUEVO PEDIDO VUELVA A CAPTURAR EL CODIGO QR DE SU MESA)
         //TODO lottie de espera
-        //TODO pestañas menu
+        //TODO CAMBIAR RECYCLER DEL ORDER POR LISTA DE PRODUCTOS EN STAFF
 
         checkUser();
     }
 
 
-    public void resetOrder() {
-
+    public LiveData<Boolean> resetOrder() {
+        MutableLiveData<Boolean> liveBool = new MutableLiveData();
         ResultViewModel resultViewModel = ViewModelProviders.of(this).get(ResultViewModel.class);
         resultViewModel.deleteActualOrder();
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        FirebaseUser firebaseUser = mAuth.getCurrentUser();
-        if(firebaseUser!=null) {
-            AuthCredential authCredential = EmailAuthProvider.getCredential("user@example.com", "password1234");
-
-            firebaseUser.reauthenticate(authCredential).addOnCompleteListener(new OnCompleteListener<Void>() {
+        firebaseUser = mAuth.getCurrentUser();
+        if (firebaseUser == null) {
+            mAuth.signInWithEmailAndPassword(mail, pass).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                 @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    firebaseUser.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                public void onSuccess(AuthResult authResult) {
+                    firebaseUser = mAuth.getCurrentUser();
+                    eraseUser().observe(MainActivity.this, new Observer<Boolean>() {
                         @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if (task.isSuccessful()) {
-                                Toast.makeText(MainActivity.this, "ELIMINADO", Toast.LENGTH_SHORT).show();
-                            }
+                        public void onChanged(Boolean aBoolean) {
+                            liveBool.setValue(true);
                         }
                     });
                 }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    liveBool.setValue(true);
+                }
+            });
+        } else {
+            eraseUser().observe(MainActivity.this, new Observer<Boolean>() {
+                @Override
+                public void onChanged(Boolean aBoolean) {
+                    liveBool.setValue(true);
+                }
             });
         }
-      //  mAuth.signOut();
+        return liveBool;
+    }
+
+    private LiveData<Boolean> eraseUser() {
+        MutableLiveData<Boolean> liveBool = new MutableLiveData();
+        AuthCredential authCredential = EmailAuthProvider.getCredential("user@example.com", "password1234");
+        firebaseUser.reauthenticate(authCredential).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                firebaseUser.delete();
+                liveBool.setValue(true);
+            }
+        });
+        return liveBool;
     }
 
     @Override
     protected void onDestroy() {
         resetOrder();
         super.onDestroy();
+    }
+
+    @Override
+    public void recyclerMenuListener(Integer adapterPosition, Result result) {
+        Bundle bundle = new Bundle();
+        bundle.putInt(ProductDetailsActivity.KEY_POSITION, adapterPosition);
+        bundle.putSerializable(ProductDetailsActivity.KEY_RESULT, result);
+        Intent intent = new Intent(this, ProductDetailsActivity.class);
+        intent.putExtras(bundle);
+        startActivity(intent);
     }
 }

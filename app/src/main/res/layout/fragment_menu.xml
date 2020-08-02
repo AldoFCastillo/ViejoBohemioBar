@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="20dp"
     android:orientation="vertical"
     android:backgroundTint="#D6CECE"
     tools:context=".view.fragment.MenuFragment">
@@ -22,11 +21,16 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.07" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerMenuFragment"
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FFF"
+        android:id="@+id/appBarMenu"/>
+
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/viewPagerMenuTabs"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="30dp"
-        app:layout_constraintTop_toBottomOf="@+id/textViewTitleMenu" />
+        android:layout_marginTop="30dp" />
 
 </LinearLayout>
