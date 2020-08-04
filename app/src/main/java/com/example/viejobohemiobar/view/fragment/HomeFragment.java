@@ -72,10 +72,6 @@ public class HomeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         ButterKnife.bind(this, view);
 
-        MainActivity main = (MainActivity) getActivity();
-        main.toolbar.getMenu().findItem(R.id.itemToolbarYourOrder).setVisible(false);
-//        main.resetOrder();
-
 
         textViewHome.setText(mParam1);
 

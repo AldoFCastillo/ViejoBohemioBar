@@ -13,4 +13,8 @@ public class UserViewModel extends ViewModel {
     public LiveData<FirebaseUser> registerUser(String mail, String pass){
         return userDataSource.registerUser(mail, pass);
     }
+
+    public LiveData<Boolean> loginUser(String mail, String pass){
+        return userDataSource.loginUser(mail, pass);
+    }
 }

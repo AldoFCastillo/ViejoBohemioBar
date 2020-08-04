@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#D3D0D0"
+    android:id="@+id/constraintStaff"
     tools:context=".view.fragment.StaffOrdersFragment">
 
     <TextView
@@ -27,6 +28,18 @@
         android:layout_height="match_parent"
         android:layout_marginTop="80dp"
         android:background="#D3D0D0"
-        app:layout_constraintTop_toBottomOf="@+id/textViewTitleMenu" />
+        app:layout_constraintTop_toBottomOf="@+id/textViewTitleStaff" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textViewEmptyList"
+        android:layout_marginTop="80dp"
+        android:visibility="gone"
+        android:text="NO HAY ORDENES EN ESTA LISTA"
+        app:layout_constraintTop_toBottomOf="@+id/textViewTitleStaff"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

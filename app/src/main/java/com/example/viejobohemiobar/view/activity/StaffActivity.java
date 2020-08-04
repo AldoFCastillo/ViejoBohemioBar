@@ -66,6 +66,7 @@ public class StaffActivity extends AppCompatActivity implements StaffOrdersFragm
         getSupportActionBar().setHomeButtonEnabled(true);
     }
 
+
     private void setSnackBar() {
 
         switch(path){
@@ -90,7 +91,7 @@ public class StaffActivity extends AppCompatActivity implements StaffOrdersFragm
 
     @Override
     public void StaffOrdersFragmentListener(Integer adapterPosition, OrderLog orderLog, String path) {
-        OrderFragment orderFragment = OrderFragment.newInstance(orderLog.getOrderList().get(adapterPosition), path);
+        OrderFragment orderFragment = OrderFragment.newInstance(orderLog.getOrderList().get(adapterPosition), path, adapterPosition);
         setFragment(orderFragment);
 
     }

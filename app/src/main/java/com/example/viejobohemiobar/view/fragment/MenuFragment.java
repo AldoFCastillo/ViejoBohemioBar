@@ -65,8 +65,6 @@ public class MenuFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_menu, container, false);
         ButterKnife.bind(this, view);
 
-        MainActivity main = (MainActivity) getActivity();
-        main.toolbar.getMenu().findItem(R.id.itemToolbarYourOrder).setVisible(true);
 
         TabLayout tabLayout = new TabLayout(getActivity());
         tabLayout.setTabTextColors(Color.parseColor("#000000"), Color.parseColor("#000000"));

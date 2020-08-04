@@ -106,7 +106,7 @@ public class ResultDataSource {
 
     public LiveData<Boolean> updateOrderLog(OrderLog orderLog, String path) {
         MutableLiveData<Boolean> liveBool = new MutableLiveData<>();
-        getDocumentReference(pending).set(orderLog).addOnSuccessListener(new OnSuccessListener<Void>() {
+        getDocumentReference(stringToPath(stringToPath(path))).set(orderLog).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 liveBool.setValue(true);

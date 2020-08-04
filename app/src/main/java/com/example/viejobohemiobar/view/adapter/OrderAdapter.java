@@ -5,8 +5,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -15,6 +18,10 @@ import com.example.viejobohemiobar.model.pojo.Order;
 import com.example.viejobohemiobar.model.pojo.OrderLog;
 import com.example.viejobohemiobar.model.pojo.Product;
 import com.example.viejobohemiobar.model.pojo.Result;
+import com.example.viejobohemiobar.view.activity.MainActivity;
+import com.example.viejobohemiobar.view.activity.StaffActivity;
+import com.example.viejobohemiobar.viewModel.ResultViewModel;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
 
@@ -25,10 +32,13 @@ public class OrderAdapter extends RecyclerView.Adapter {
 
     private listener listener;
     private List<Order> orderList;
+    private String path;
+    private Order order;
 
-    public OrderAdapter(listener listener, List<Order> orderList) {
+    public OrderAdapter(listener listener, List<Order> orderList, String path) {
         this.listener = listener;
         this.orderList = orderList;
+        this.path = path;
     }
 
     @NonNull
@@ -64,6 +74,9 @@ public class OrderAdapter extends RecyclerView.Adapter {
         TextView textViewPaymentCellOrder;
         @BindView(R.id.textViewDetailsCellOrder)
         TextView textViewDetailsCellOrder;
+        @BindView(R.id.deleteOrderCell)
+        ImageView imageViewDelete;
+        private Order order;
 
 
         public OrderViewHolder(@NonNull View itemView) {
@@ -78,10 +91,20 @@ public class OrderAdapter extends RecyclerView.Adapter {
                 }
             });
 
+            imageViewDelete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    listener.orderAdapterDeleteListener(getAdapterPosition(),order);
+
+
+                }
+            });
+
 
         }
 
         public void bind(Order order) {
+            this.order = order;
             Glide.with(itemView).load(order.getResult().getResults().get(0).getPicture()).into(imageViewCellOrder);
             String title = "Pedido Mesa " + order.getTable() + " (" + order.getTime() + "hs)";
             textViewTitleCellOrder.setText(title);
@@ -102,5 +125,8 @@ public class OrderAdapter extends RecyclerView.Adapter {
 
     public interface listener {
         void orderAdapterListener(Integer adapterPosition, OrderLog orderLog);
+        void orderAdapterDeleteListener(Integer adapterPosition,Order order);
     }
+
+
 }

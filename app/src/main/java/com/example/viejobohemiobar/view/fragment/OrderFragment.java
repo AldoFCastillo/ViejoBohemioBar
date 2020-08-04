@@ -5,8 +5,6 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
@@ -40,8 +38,9 @@ import butterknife.ButterKnife;
 
 public class OrderFragment extends Fragment implements ProductAdapter.adapterListener {
 
-    private static final String ARG_SERIAL = "serial";
+    public static final String ARG_SERIAL = "serial";
     public static final String ARG_PATH = "path";
+    public static final String ARG_POSITION = "position";
 
 
     private Result result;
@@ -53,6 +52,7 @@ public class OrderFragment extends Fragment implements ProductAdapter.adapterLis
     private String path;
     private String button;
     private String next;
+    private int position;
 
     @BindView(R.id.recyclerViewOrder)
     RecyclerView recyclerViewOrder;
@@ -73,11 +73,12 @@ public class OrderFragment extends Fragment implements ProductAdapter.adapterLis
         // Required empty public constructor
     }
 
-    public static OrderFragment newInstance(Serializable result, String path) {
+    public static OrderFragment newInstance(Serializable result, String path, int position) {
         OrderFragment fragment = new OrderFragment();
         Bundle args = new Bundle();
         args.putSerializable(ARG_SERIAL, result);
         args.putString(ARG_PATH, path);
+        args.putInt(ARG_POSITION, position);
         fragment.setArguments(args);
         return fragment;
     }
@@ -90,9 +91,10 @@ public class OrderFragment extends Fragment implements ProductAdapter.adapterLis
             if (getArguments().getSerializable(ARG_SERIAL) instanceof Result) {
                 this.result = (Result) getArguments().getSerializable(ARG_SERIAL);
                 this.order = null;
-            } else{
+            } else {
                 this.order = (Order) getArguments().getSerializable(ARG_SERIAL);
                 this.path = getArguments().getString(ARG_PATH);
+                this.position = getArguments().getInt(ARG_POSITION);
             }
         }
     }
@@ -100,7 +102,6 @@ public class OrderFragment extends Fragment implements ProductAdapter.adapterLis
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_order, container, false);
         ButterKnife.bind(this, view);
 
@@ -118,22 +119,25 @@ public class OrderFragment extends Fragment implements ProductAdapter.adapterLis
     private void setMadeOrder() {
         productAdapter = new ProductAdapter(OrderFragment.this, order.getResult().getResults());
         recyclerViewOrder.setAdapter(productAdapter);
-        switch(path){
-            case "p": button = "Tomar Pedido";
-            next = "i";
+        switch (path) {
+            case "p":
+                button = "Tomar Pedido";
+                next = "i";
                 break;
-            case "i": button = "Pedido Entregado";
+            case "i":
+                button = "Pedido Entregado";
                 next = "c";
                 break;
-            case "c": button = "Eliminar Pedido";
+            case "c":
+                button = "Eliminar Pedido";
                 break;
         }
-        buttonConfirmOrder.setText(button);
-        buttonConfirmOrder.setVisibility(View.VISIBLE);
-        buttonConfirmOrder.setOnClickListener(new View.OnClickListener() {
+        buttonToProcessOrder.setVisibility(View.VISIBLE);
+        buttonToProcessOrder.setText(button);
+        buttonToProcessOrder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                transferOrderToProcess();
+                migrateOrder();
             }
         });
 
@@ -145,76 +149,61 @@ public class OrderFragment extends Fragment implements ProductAdapter.adapterLis
         buttonConfirmOrder.setVisibility(View.INVISIBLE);
     }
 
-    private void transferOrderToProcess(){
+    private void migrateOrder() {
+
         resultViewModel.getOrderLog(path).observe(getViewLifecycleOwner(), new Observer<OrderLog>() {
             @Override
             public void onChanged(OrderLog orderLog) {
                 List<Order> orderList = orderLog.getOrderList();
-                orderList.remove(order);
+                orderList.remove(position);
                 orderLog.setOrderList(orderList);
                 resultViewModel.updateOrderLog(orderLog, path);
-                resultViewModel.getOrderLog(next).observe(getViewLifecycleOwner(), new Observer<OrderLog>() {
-                    @Override
-                    public void onChanged(OrderLog orderLog) {
-                        List<Order> orderList = orderLog.getOrderList();
-                        orderList.add(order);
-                        orderLog.setOrderList(orderList);
-                        resultViewModel.updateOrderLog(orderLog, next);
-                    }
-                });
-                //back to StaffFragment
+                addOrderToLog(order, next);
+
+                //TODO back to StaffFragment
             }
         });
     }
 
     private void setToConfirmOrder() {
+        path = "p";
         productAdapter = new ProductAdapter(OrderFragment.this, result.getResults());
         recyclerViewOrder.setAdapter(productAdapter);
-
         buttonToProcessOrder.setVisibility(View.INVISIBLE);
         buttonCancelOrder.setVisibility(View.VISIBLE);
         buttonConfirmOrder.setVisibility(View.VISIBLE);
-
-        Double total = 0.0;
-        for (Product product : result.getResults()) {
-            String stringPrice = product.getPrice().substring(1);
-            double doble = Double.parseDouble(stringPrice);
-            total = total + doble;
-        }
-        String stringTotal = "$" + total;
-
+        String stringTotal = getTotal();
         textViewTotalOrder.setText(stringTotal);
+
         buttonConfirmOrder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 String comments = editTextCommentsOrder.getText().toString();
                 FirebaseAuth fAuth = FirebaseAuth.getInstance();
                 String id = fAuth.getUid();
-                Order order = Order.getOrderInstance(result, stringTotal, true, checkBoxNeedWait.isChecked(), comments, id, table, getTime());
-                confirmOrder(order, "p");
-
+                order = Order.getOrderInstance(result, stringTotal, true, checkBoxNeedWait.isChecked(), comments, id, table, getTime());
+                addOrderToLog(order, path);
             }
         });
 
         buttonCancelOrder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                deleteActualOrder().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
-                    @Override
-                    public void onChanged(Boolean aBoolean) {
-                        if (aBoolean) {
-                            Toast.makeText(getContext(), "Pedido Cancelado", Toast.LENGTH_SHORT).show();
-                            listener.orderFragmentListener();
-                        } else
-                            Toast.makeText(getContext(), "Ocurrio un error", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                Toast.makeText(getContext(), "Pedido Cancelado", Toast.LENGTH_SHORT).show();
+                listener.orderFragmentListener();
             }
         });
-
     }
 
+    private String getTotal(){
+        Double total = 0.0;
+        for (Product product : result.getResults()) {
+            String stringPrice = product.getPrice().substring(1);
+            double doble = Double.parseDouble(stringPrice);
+            total = total + doble;
+        }
+        return "$" + total;
+    }
 
     private String getTime() {
         Calendar calendario = Calendar.getInstance();
@@ -224,7 +213,7 @@ public class OrderFragment extends Fragment implements ProductAdapter.adapterLis
         return time;
     }
 
-    private void confirmOrder(Order order, String path) {
+    private void addOrderToLog(Order order, String path) {
         resultViewModel.getOrderLog(path).observe(getViewLifecycleOwner(), new Observer<OrderLog>() {
             @Override
             public void onChanged(OrderLog orderLog) {
@@ -235,7 +224,7 @@ public class OrderFragment extends Fragment implements ProductAdapter.adapterLis
                 } else orderList = orderLog.getOrderList();
                 orderList.add(order);
                 orderLog.setOrderList(orderList);
-                updateOrderLog(orderLog, "p");
+                updateOrderLog(orderLog, path);
 
                 //TODO PEDIR PASSWORD
             }
@@ -248,7 +237,6 @@ public class OrderFragment extends Fragment implements ProductAdapter.adapterLis
             public void onChanged(Boolean aBoolean) {
                 if (aBoolean) {
                     Toast.makeText(getContext(), "Pedido Confirmado", Toast.LENGTH_SHORT).show();
-                    deleteActualOrder();
                     listener.orderFragmentListener();
                 } else Toast.makeText(getContext(), "Ocurrio un error", Toast.LENGTH_SHORT).show();
             }
@@ -256,16 +244,6 @@ public class OrderFragment extends Fragment implements ProductAdapter.adapterLis
 
     }
 
-    private LiveData<Boolean> deleteActualOrder() {
-        MutableLiveData<Boolean> liveBool = new MutableLiveData();
-        resultViewModel.deleteActualOrder().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
-            @Override
-            public void onChanged(Boolean aBoolean) {
-                liveBool.setValue(aBoolean);
-            }
-        });
-        return liveBool;
-    }
 
     @Override
     public void onAttach(@NonNull Context context) {
