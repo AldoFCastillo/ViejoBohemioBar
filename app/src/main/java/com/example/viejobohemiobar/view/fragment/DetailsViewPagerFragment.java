@@ -26,10 +26,12 @@ public class DetailsViewPagerFragment extends Fragment {
 
     private static final String ARG_POSITION = "position";
     private static final String ARG_RESULT = "result";
+    private static final String ARG_TABLE = "table";
 
     private int adapterPosition;
     private Result result;
     private List<Product> productList = new ArrayList<>();
+    private String table;
 
     @BindView(R.id.viewPagerDetails)
     ViewPager viewPager;
@@ -39,11 +41,12 @@ public class DetailsViewPagerFragment extends Fragment {
     }
 
 
-    public static DetailsViewPagerFragment newInstance(int adapterPosition, Result result) {
+    public static DetailsViewPagerFragment newInstance(int adapterPosition, Result result, String table) {
         DetailsViewPagerFragment fragment = new DetailsViewPagerFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_POSITION, adapterPosition);
         args.putSerializable(ARG_RESULT, result);
+        args.putString(ARG_TABLE, table);
         fragment.setArguments(args);
         return fragment;
     }
@@ -54,6 +57,7 @@ public class DetailsViewPagerFragment extends Fragment {
         if (getArguments() != null) {
             adapterPosition = getArguments().getInt(ARG_POSITION);
             result = (Result)getArguments().getSerializable(ARG_RESULT);
+            table = getArguments().getString(ARG_TABLE);
         }
     }
 
@@ -64,16 +68,16 @@ public class DetailsViewPagerFragment extends Fragment {
         ButterKnife.bind(this, view);
 
         productList = result.getResults();
-        buildDetailsFragmentList(productList, adapterPosition);
+        buildDetailsFragmentList(productList, adapterPosition, table);
 
         return view;
     }
 
 
-    private void buildDetailsFragmentList(List<Product> productList, Integer adapterPosition) {
+    private void buildDetailsFragmentList(List<Product> productList, Integer adapterPosition, String table) {
         List<Fragment> fragmentList = new ArrayList<>();
-        for (Product details : productList) {
-            ProductDetailsFragment detailsFragment = ProductDetailsFragment.newInstance(details);
+        for (Product product : productList) {
+            ProductDetailsFragment detailsFragment = ProductDetailsFragment.newInstance(product, table);
             fragmentList.add(detailsFragment);
         }
         setViewPager(adapterPosition, fragmentList);

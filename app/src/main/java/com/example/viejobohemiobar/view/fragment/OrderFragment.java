@@ -5,6 +5,8 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
@@ -26,11 +28,13 @@ import com.example.viejobohemiobar.model.pojo.Result;
 import com.example.viejobohemiobar.service.ConfigRecyclerView;
 import com.example.viejobohemiobar.view.adapter.ProductAdapter;
 import com.example.viejobohemiobar.viewModel.ResultViewModel;
+import com.example.viejobohemiobar.viewModel.UserViewModel;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
@@ -68,6 +72,8 @@ public class OrderFragment extends Fragment implements ProductAdapter.adapterLis
     TextView textViewTotalOrder;
     @BindView(R.id.buttonToProcessOrder)
     Button buttonToProcessOrder;
+    @BindView(R.id.editTextPassFragmentOrder)
+    EditText editTextPass;
 
     public OrderFragment() {
         // Required empty public constructor
@@ -132,6 +138,7 @@ public class OrderFragment extends Fragment implements ProductAdapter.adapterLis
                 button = "Eliminar Pedido";
                 break;
         }
+
         buttonToProcessOrder.setVisibility(View.VISIBLE);
         buttonToProcessOrder.setText(button);
         buttonToProcessOrder.setOnClickListener(new View.OnClickListener() {
@@ -147,6 +154,7 @@ public class OrderFragment extends Fragment implements ProductAdapter.adapterLis
         checkBoxNeedWait.setActivated(order.getCallWait());
         buttonCancelOrder.setVisibility(View.INVISIBLE);
         buttonConfirmOrder.setVisibility(View.INVISIBLE);
+        editTextPass.setVisibility(View.GONE);
     }
 
     private void migrateOrder() {
@@ -168,6 +176,7 @@ public class OrderFragment extends Fragment implements ProductAdapter.adapterLis
     private void setToConfirmOrder() {
         path = "p";
         productAdapter = new ProductAdapter(OrderFragment.this, result.getResults());
+        editTextPass.setVisibility(View.VISIBLE);
         recyclerViewOrder.setAdapter(productAdapter);
         buttonToProcessOrder.setVisibility(View.INVISIBLE);
         buttonCancelOrder.setVisibility(View.VISIBLE);
@@ -178,11 +187,22 @@ public class OrderFragment extends Fragment implements ProductAdapter.adapterLis
         buttonConfirmOrder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String comments = editTextCommentsOrder.getText().toString();
-                FirebaseAuth fAuth = FirebaseAuth.getInstance();
-                String id = fAuth.getUid();
-                order = Order.getOrderInstance(result, stringTotal, true, checkBoxNeedWait.isChecked(), comments, id, table, getTime());
-                addOrderToLog(order, path);
+                String pass = editTextPass.getText().toString();
+                confirmPass(pass).observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+                    @Override
+                    public void onChanged(Boolean aBoolean) {
+                        if(aBoolean){
+                            String comments = editTextCommentsOrder.getText().toString();
+                            Date date = new Date();
+                            String id = table+date;
+                            Order actualOrder = Order.getOrderInstance(result, stringTotal, true, checkBoxNeedWait.isChecked(), comments, id, table, getTime());
+                            addOrderToLog(actualOrder, path);
+                        }else{
+                            Toast.makeText(getContext(), "Clave incorrecta!", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+
             }
         });
 
@@ -193,6 +213,20 @@ public class OrderFragment extends Fragment implements ProductAdapter.adapterLis
                 listener.orderFragmentListener();
             }
         });
+    }
+
+    private LiveData<Boolean> confirmPass(String pass){
+        MutableLiveData<Boolean> liveBool = new MutableLiveData<>();
+        UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+        userViewModel.getPassword().observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(String s) {
+                if (s.equals(pass)){
+                    liveBool.setValue(true);
+                } else liveBool.setValue(false);
+            }
+        });
+        return liveBool;
     }
 
     private String getTotal(){
@@ -213,7 +247,7 @@ public class OrderFragment extends Fragment implements ProductAdapter.adapterLis
         return time;
     }
 
-    private void addOrderToLog(Order order, String path) {
+    private void addOrderToLog(Order actualOrder, String path) {
         resultViewModel.getOrderLog(path).observe(getViewLifecycleOwner(), new Observer<OrderLog>() {
             @Override
             public void onChanged(OrderLog orderLog) {
@@ -222,7 +256,7 @@ public class OrderFragment extends Fragment implements ProductAdapter.adapterLis
                     orderLog = new OrderLog();
                     orderList = new ArrayList<>();
                 } else orderList = orderLog.getOrderList();
-                orderList.add(order);
+                orderList.add(actualOrder);
                 orderLog.setOrderList(orderList);
                 updateOrderLog(orderLog, path);
 

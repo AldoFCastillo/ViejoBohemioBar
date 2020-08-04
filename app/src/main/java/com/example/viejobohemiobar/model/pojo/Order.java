@@ -30,9 +30,9 @@ public class Order implements Serializable {
     }
 
     public static Order getOrderInstance(Result result, String total, Boolean cash, Boolean callWait, String comments, String id, String table, String time){
-        if(order==null){
+
             order = new Order(result, total, cash,callWait, comments,id, table, time);
-        }
+
         return order;
     }
 

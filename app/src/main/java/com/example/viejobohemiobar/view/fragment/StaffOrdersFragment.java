@@ -1,14 +1,19 @@
 package com.example.viejobohemiobar.view.fragment;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,7 +27,9 @@ import com.example.viejobohemiobar.model.pojo.OrderLog;
 import com.example.viejobohemiobar.service.ConfigRecyclerView;
 import com.example.viejobohemiobar.view.adapter.OrderAdapter;
 import com.example.viejobohemiobar.viewModel.ResultViewModel;
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.tabs.TabLayout;
 
 import java.util.List;
 
@@ -30,7 +37,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class StaffOrdersFragment extends Fragment implements OrderAdapter.listener {
+public class StaffOrdersFragment extends Fragment {
 
 
     private static final String ARG_LOG = "orderLog";
@@ -47,12 +54,11 @@ public class StaffOrdersFragment extends Fragment implements OrderAdapter.listen
 
     @BindView(R.id.textViewTitleStaff)
     TextView textViewTitle;
-    @BindView(R.id.recyclerStaffFragment)
-    RecyclerView recyclerView;
-    @BindView(R.id.constraintStaff)
-    ConstraintLayout constraintLayoutStaff;
-    @BindView(R.id.textViewEmptyList)
-    TextView textViewEmptyList;
+    @BindView(R.id.viewPagerStaffTabs)
+    ViewPager viewPagerStaffTabs;
+    @BindView(R.id.appBarStaff)
+    AppBarLayout appBarStaff;
+
 
     public StaffOrdersFragment() {
         // Required empty public constructor
@@ -85,33 +91,17 @@ public class StaffOrdersFragment extends Fragment implements OrderAdapter.listen
 
         resultViewModel = ViewModelProviders.of(this).get(ResultViewModel.class);
 
-        switch (path) {
-            case "p":
-                title = "Pedidos Pendientes";
-                break;
-            case "i":
-                title = "Pedidos en proceso";
-                break;
-            case "c":
-                title = "Pedidos cerrados";
-                break;
-        }
+        TabLayout tabLayout = new TabLayout(getActivity());
+        tabLayout.setTabTextColors(Color.parseColor("#000000"), Color.parseColor("#000000"));
+        appBarStaff.addView(tabLayout);
+        ViewPagerAdapterStaffTabs viewPagerAdapterStaffTabs = new ViewPagerAdapterStaffTabs(getChildFragmentManager());
+        viewPagerStaffTabs.setAdapter(viewPagerAdapterStaffTabs);
 
-        textViewTitle.setText(title);
-        if (!orderLog.getOrderList().isEmpty()) {
-            setAdapterRecycler(orderLog.getOrderList());
-        } else textViewEmptyList.setVisibility(View.VISIBLE);
-
+        tabLayout.setupWithViewPager(viewPagerStaffTabs);
 
         return view;
     }
 
-    private void setAdapterRecycler(List<Order> orderList) {
-        textViewEmptyList.setVisibility(View.GONE);
-        recyclerView = ConfigRecyclerView.getRecyclerView(recyclerView, getContext());
-        orderAdapter = new OrderAdapter(StaffOrdersFragment.this, orderList, path);
-        recyclerView.setAdapter(orderAdapter);
-    }
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -119,45 +109,53 @@ public class StaffOrdersFragment extends Fragment implements OrderAdapter.listen
         this.listener = (listener) context;
     }
 
-    @Override
-    public void orderAdapterListener(Integer adapterPosition, OrderLog orderLog) {
-        listener.StaffOrdersFragmentListener(adapterPosition, orderLog, path);
-    }
 
-    @Override
-    public void orderAdapterDeleteListener(Integer adapterPosition,Order order) {
-        this.order = order;
-        this.adapterPosition = adapterPosition;
-        Snackbar mySnackbar = Snackbar.make(constraintLayoutStaff, "Confirma que desea eliminar la orden?", Snackbar.LENGTH_SHORT);
-        mySnackbar.setAction("ACEPTAR", new ConfirmOrderDelete());
-        mySnackbar.show();
-    }
 
     public interface listener {
         void StaffOrdersFragmentListener(Integer adapterPosition, OrderLog orderLog, String Path);
     }
 
-    public class ConfirmOrderDelete implements View.OnClickListener {
+    public class ViewPagerAdapterStaffTabs extends FragmentStatePagerAdapter {
+
+        String[] titlePages = {"Pedidos Pendientes","Pedidos en proceso","Pedidos cerrados"};
+
+
+        public ViewPagerAdapterStaffTabs(@NonNull FragmentManager fm) {
+            super(fm);
+        }
+
+        @NonNull
+        @Override
+        public Fragment getItem(int position) {
+            RecyclerStaffFragment recyclerStaffFragment;
+            switch(position){
+                case 0 :
+                    recyclerStaffFragment = RecyclerStaffFragment.newInstance("p");
+                    return recyclerStaffFragment;
+                case 1 :
+                    recyclerStaffFragment = RecyclerStaffFragment.newInstance("i");
+                    return recyclerStaffFragment;
+                case 2 :
+                    recyclerStaffFragment = RecyclerStaffFragment.newInstance("c");
+                    return recyclerStaffFragment;
+            }
+
+            return null;
+        }
 
         @Override
-        public void onClick(View v) {
-            resultViewModel.getOrderLog(path).observe(getViewLifecycleOwner(), new Observer<OrderLog>() {
-                @Override
-                public void onChanged(OrderLog orderLog) {
-                    List<Order> newOrderList = orderLog.getOrderList();
-                    newOrderList.remove(adapterPosition);
-                    orderLog.setOrderList(newOrderList);
-                    resultViewModel.updateOrderLog(orderLog, path).observe(getViewLifecycleOwner(), new Observer<Boolean>() {
-                        @Override
-                        public void onChanged(Boolean aBoolean) {
-                            if (aBoolean) {
-                                Toast.makeText(getContext(), "Pedido eliminado!", Toast.LENGTH_SHORT).show();
-                                setAdapterRecycler(newOrderList);
-                            }
-                        }
-                    });
-                }
-            });
+        public int getCount() {
+            return 3;
         }
+
+        @Nullable
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return titlePages[position];
+        }
+
+
+
+
     }
 }

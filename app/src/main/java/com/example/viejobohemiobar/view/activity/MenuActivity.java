@@ -36,9 +36,12 @@ import butterknife.ButterKnife;
 
 public class MenuActivity extends AppCompatActivity implements RecyclerMenuFragment.listener, OrderFragment.listener {
 
+    public static final String ARG_TABLE = "table";
+
 
     private long backPressedTime;
     private Toast backToast;
+    private String table;
 
 
     @BindView(R.id.toolbarDetails)
@@ -51,9 +54,13 @@ public class MenuActivity extends AppCompatActivity implements RecyclerMenuFragm
 
         ButterKnife.bind(this);
 
+        Bundle bundle = getIntent().getExtras();
+        table = bundle.getString(ARG_TABLE);
+
 
         setToolBar();
         setFragment(new MenuFragment());
+        Toast.makeText(MenuActivity.this, "Ya podes armar tu pedido", Toast.LENGTH_SHORT).show();
 
 
     }
@@ -75,7 +82,7 @@ public class MenuActivity extends AppCompatActivity implements RecyclerMenuFragm
         switch (item.getItemId()) {
             case R.id.itemToolbarYourOrder:
                 ResultViewModel resultViewModel = ViewModelProviders.of(this).get(ResultViewModel.class);
-                resultViewModel.getActualOrder().observe(this, new Observer<Result>() {
+                resultViewModel.getActualOrder(table).observe(this, new Observer<Result>() {
                     @Override
                     public void onChanged(Result result) {
                         if (result != null) {
@@ -120,7 +127,7 @@ public class MenuActivity extends AppCompatActivity implements RecyclerMenuFragm
 
     @Override
     public void recyclerMenuListener(Integer adapterPosition, Result result) {
-        DetailsViewPagerFragment detailsViewPagerFragment = DetailsViewPagerFragment.newInstance(adapterPosition, result);
+        DetailsViewPagerFragment detailsViewPagerFragment = DetailsViewPagerFragment.newInstance(adapterPosition, result, table);
         setFragment(detailsViewPagerFragment);
     }
 

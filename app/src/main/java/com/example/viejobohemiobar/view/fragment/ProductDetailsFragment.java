@@ -30,10 +30,12 @@ public class ProductDetailsFragment extends Fragment {
 
 
     private static final String ARG_PRODUCT = "product";
+    private static final String ARG_TABLE= "table";
 
 
     private Product product;
     private ResultViewModel resultViewModel;
+    private String table;
 
 
     @BindView(R.id.textViewTitleDetails)
@@ -51,10 +53,11 @@ public class ProductDetailsFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static ProductDetailsFragment newInstance(Product product) {
+    public static ProductDetailsFragment newInstance(Product product, String table) {
         ProductDetailsFragment fragment = new ProductDetailsFragment();
         Bundle args = new Bundle();
         args.putSerializable(ARG_PRODUCT, product);
+        args.putString(ARG_TABLE, table);
         fragment.setArguments(args);
         return fragment;
     }
@@ -64,6 +67,7 @@ public class ProductDetailsFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             product = (Product) getArguments().getSerializable(ARG_PRODUCT);
+            table = getArguments().getString(ARG_TABLE);
 
         }
     }
@@ -87,7 +91,7 @@ public class ProductDetailsFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-                resultViewModel.getActualOrder().observe(getViewLifecycleOwner(), new Observer<Result>() {
+                resultViewModel.getActualOrder(table).observe(getViewLifecycleOwner(), new Observer<Result>() {
                     @Override
                     public void onChanged(Result result) {
                         List<Product> productList;
@@ -109,7 +113,7 @@ public class ProductDetailsFragment extends Fragment {
 
     private void updateActualOrder(Result result) {
 
-        resultViewModel.updateActualOrder(result).observe(this, new Observer<Boolean>() {
+        resultViewModel.updateActualOrder(result, table).observe(this, new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean aBoolean) {
                 if (aBoolean){

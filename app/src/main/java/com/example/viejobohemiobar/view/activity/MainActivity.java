@@ -10,34 +10,22 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.example.viejobohemiobar.R;
-import com.example.viejobohemiobar.model.pojo.Result;
 import com.example.viejobohemiobar.view.fragment.HomeFragment;
 import com.example.viejobohemiobar.view.fragment.LoginFragment;
-import com.example.viejobohemiobar.view.fragment.MenuFragment;
-import com.example.viejobohemiobar.view.fragment.OrderFragment;
-import com.example.viejobohemiobar.view.fragment.RecyclerMenuFragment;
+import com.example.viejobohemiobar.view.fragment.PasswordFragment;
 import com.example.viejobohemiobar.view.fragment.ScannerFragment;
 import com.example.viejobohemiobar.viewModel.ResultViewModel;
-import com.example.viejobohemiobar.viewModel.UserViewModel;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -71,20 +59,9 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        if (checkUSer()) {
-            resetOrder().observe(this, new Observer<Boolean>() {
-                @Override
-                public void onChanged(Boolean aBoolean) {
-                    setFragment(new HomeFragment());
-                    setToolBar();
-                    setNavigationView();
-                }
-            });
-        }else {
             setFragment(new HomeFragment());
             setToolBar();
             setNavigationView();
-        }
 
     }
 
@@ -130,17 +107,20 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
                         Snackbar.make(mainLayout, "Login", Snackbar.LENGTH_LONG).show();
                         break;
 
-                    case R.id.navigationViewPedidosPendientesItem:
-                        goStaffActivity("p");
+                    case R.id.navigationViewOrdersBacklog:
+                        goStaffActivity();
                         break;
 
-                    case R.id.navigationViewPedidosPreparacionItem:
-                        goStaffActivity("i");
+                    case R.id.registerMenuNavigation:
+                        setFragment(new LoginFragment());
+                        Snackbar.make(mainLayout, "Registro", Snackbar.LENGTH_LONG).show();
                         break;
 
-                    case R.id.navigationViewPedidosEntregadosItem:
-                        goStaffActivity("c");
+                    case R.id.changePassMenuNavigation:
+                        setFragment(new PasswordFragment());
+                        Snackbar.make(mainLayout, "Cambiar clave", Snackbar.LENGTH_LONG).show();
                         break;
+
 
                     case R.id.navigationViewCerrarSesionItem:
                         FirebaseAuth.getInstance().signOut();
@@ -150,10 +130,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
                         Toast.makeText(MainActivity.this, "Desconexion exitosa", Toast.LENGTH_SHORT).show();
                         break;
 
-                    case R.id.registerMenuNavigation:
-                        setFragment(new LoginFragment());
-                        Snackbar.make(mainLayout, "Registro", Snackbar.LENGTH_LONG).show();
-                        break;
+
                 }
 
                 drawerLayout.closeDrawers();
@@ -164,33 +141,34 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
 
     }
 
-    private void goStaffActivity(String path) {
+    private void goStaffActivity() {
         Intent intent = new Intent(this, StaffActivity.class);
+        startActivity(intent);
+    }
+
+    private void goMenuActivity(String table) {
+        ResultViewModel resultViewModel = ViewModelProviders.of(this).get(ResultViewModel.class);
+        resultViewModel.deleteActualOrder(table);
+        Intent intent = new Intent(this, MenuActivity.class);
         Bundle bundle = new Bundle();
-        bundle.putString(StaffActivity.KEY_PATH, path);
+        bundle.putString(MenuActivity.ARG_TABLE, table);
         intent.putExtras(bundle);
         startActivity(intent);
     }
 
-    private void goMenuActivity() {
-        Intent intent = new Intent(this, MenuActivity.class);
-        startActivity(intent);
-    }
-
-    private void registerUser(String mail, String pass) {
+  /*  private void registerUser(String mail, String pass) {
         UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         userViewModel.registerUser(mail, pass).observe(this, new Observer<FirebaseUser>() {
             @Override
             public void onChanged(FirebaseUser firebaseUser) {
                 if (firebaseUser != null) {
                     goMenuActivity();
-                    //setFragment(new MenuFragment());
-                    Toast.makeText(MainActivity.this, "Hola! Ya podes armar tu pedido", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Ya podes armar tu pedido", Toast.LENGTH_SHORT).show();
                 }
             }
         });
 
-    }
+    }*/
 
 
     @Override
@@ -221,10 +199,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
         if ((result != null) && (result.getContents() != null)) {
             text = result.getContents();
         } else text = "Error";*/
-        mail = "mesa" + table + "@cliente.com";
-        pass = "cliente" + table;
-        resetOrder();
-        registerUser(mail, pass);
+        goMenuActivity(table);
 
     }
 
@@ -233,15 +208,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
         if (boo) {
             setFragment(new ScannerFragment());
         } else {
-            mail = "mesa1@cliente.com";
-            pass = "cliente1";
-            resetOrder().observe(this, new Observer<Boolean>() {
-                @Override
-                public void onChanged(Boolean aBoolean) {
-                    registerUser(mail, pass);
-                }
-            });
-
+            goMenuActivity("1");
         }
 
     }
@@ -250,59 +217,13 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
     //TODO fragments de confirmacion. SU PEDIDO HA SIDO CONFIRMADO, PRONTO SERA LLEVADO A SU MESA(SI DESEA HACER UN NUEVO PEDIDO VUELVA A CAPTURAR EL CODIGO QR DE SU MESA)
     //TODO lottie de espera
     //TODO CAMBIAR RECYCLER DEL ORDER POR LISTA DE PRODUCTOS EN STAFF
+    //TODO NOTIFICACIONES
 
 
-    public LiveData<Boolean> resetOrder() {
-        MutableLiveData<Boolean> liveBool = new MutableLiveData();
-        ResultViewModel resultViewModel = ViewModelProviders.of(this).get(ResultViewModel.class);
-        UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
-        resultViewModel.deleteActualOrder();
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        firebaseUser = mAuth.getCurrentUser();
-
-        if (firebaseUser == null) {
-            userViewModel.loginUser(mail, pass).observe(this, new Observer<Boolean>() {
-                @Override
-                public void onChanged(Boolean aBoolean) {
-                    if (aBoolean) {
-                        firebaseUser = mAuth.getCurrentUser();
-                        deleteUser().observe(MainActivity.this, new Observer<Boolean>() {
-                            @Override
-                            public void onChanged(Boolean aBoolean) {
-                                liveBool.setValue(true);
-                            }
-                        });
-                    } else liveBool.setValue(true);
-                }
-            });
-        } else {
-            deleteUser().observe(MainActivity.this, new Observer<Boolean>() {
-                @Override
-                public void onChanged(Boolean aBoolean) {
-                    liveBool.setValue(true);
-                }
-            });
-
-        }
-        return liveBool;
-    }
-
-    private LiveData<Boolean> deleteUser() {
-        MutableLiveData<Boolean> liveBool = new MutableLiveData();
-        AuthCredential authCredential = EmailAuthProvider.getCredential("user@example.com", "password1234");
-        firebaseUser.reauthenticate(authCredential).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                firebaseUser.delete();
-                liveBool.setValue(true);
-            }
-        });
-        return liveBool;
-    }
 
 
     @Override
     public void loginFragmentListener() {
-        goStaffActivity("p");
+        goStaffActivity();
     }
 }

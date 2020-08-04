@@ -30,13 +30,12 @@ public class RecyclerMenuFragment extends Fragment implements ProductAdapter.ada
 
     private static final String ARG_TYPE = "type";
 
-    private String mParam1;
-    private String mParam2;
+
     private List<Product> productList;
     private ProductAdapter productAdapter;
     private listener listener;
     private String type;
-    private Context context;
+
 
 
     @BindView(R.id.recyclerMenuFragment)
@@ -93,9 +92,7 @@ public class RecyclerMenuFragment extends Fragment implements ProductAdapter.ada
         return view;
     }
 
-    public void setContext(Context context) {
-        this.context = context;
-    }
+
 
     @Override
     public void onAttach(@NonNull Context context) {

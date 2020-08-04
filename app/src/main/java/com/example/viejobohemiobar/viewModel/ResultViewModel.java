@@ -34,19 +34,19 @@ public class ResultViewModel extends ViewModel {
         return resultDataSource.updateOrderLog(orderLog, path);
     }
 
-    public LiveData<Result> getActualOrder() {
+    public LiveData<Result> getActualOrder(String table) {
 
-        return resultDataSource.getActualOrder();
+        return resultDataSource.getActualOrder(table);
     }
 
-    public LiveData<Boolean> updateActualOrder(Result result) {
+    public LiveData<Boolean> updateActualOrder(Result result, String table) {
 
-        return resultDataSource.setActualOrder(result);
+        return resultDataSource.setActualOrder(result, table);
     }
 
-    public LiveData<Boolean> deleteActualOrder (){
+    public LiveData<Boolean> deleteActualOrder (String table){
 
-        return resultDataSource.deleteActualOrder();
+        return resultDataSource.deleteActualOrder(table);
     }
 
 

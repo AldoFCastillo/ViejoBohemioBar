@@ -9,8 +9,6 @@ import com.example.viejobohemiobar.service.RetrofitInstance;
 import com.example.viejobohemiobar.model.pojo.Result;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -64,7 +62,7 @@ public class ResultDataSource {
         path = stringToPath(path);
 
         MutableLiveData<OrderLog> liveOrderLog = new MutableLiveData<>();
-        DocumentReference docRef = getDocumentReference(path);
+        DocumentReference docRef = getDocumentReference(path, path);
         docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -80,33 +78,10 @@ public class ResultDataSource {
         return liveOrderLog;
     }
 
-    private String stringToPath(String path){
-        switch(path){
-            case "p": path = pending;
-                break;
-            case "i": path = process;
-                break;
-            case "c": path = closed;
-                break;
-        }
-        return path;
-    }
-
-
-    private DocumentReference getDocumentReference(String path) {
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        String id;
-        if(path.equals(pending) || currentUser==null){
-            id=pending;
-        }else{ id = currentUser.getEmail();}
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        return db.collection(path).document(id);
-    }
-
     public LiveData<Boolean> updateOrderLog(OrderLog orderLog, String path) {
+        path = stringToPath(path);
         MutableLiveData<Boolean> liveBool = new MutableLiveData<>();
-        getDocumentReference(stringToPath(stringToPath(path))).set(orderLog).addOnSuccessListener(new OnSuccessListener<Void>() {
+        getDocumentReference(path, path).set(orderLog).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 liveBool.setValue(true);
@@ -120,9 +95,34 @@ public class ResultDataSource {
         return liveBool;
     }
 
-    public LiveData<Result> getActualOrder() {
+    private String stringToPath(String path){
+        switch(path){
+            case "p": path = pending;
+                break;
+            case "i": path = process;
+                break;
+            case "c": path = closed;
+                break;
+        }
+        return path;
+    }
+
+
+
+
+    private DocumentReference getDocumentReference(String path, String table) {
+        String id = table;
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        return db.collection(path).document(id);
+    }
+
+
+
+
+
+    public LiveData<Result> getActualOrder(String table) {
         MutableLiveData<Result> liveResult = new MutableLiveData<>();
-        DocumentReference docRef = getDocumentReference(actual);
+        DocumentReference docRef = getDocumentReference(actual, table);
         docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -138,9 +138,9 @@ public class ResultDataSource {
         return liveResult;
     }
 
-    public LiveData<Boolean> setActualOrder(Result result) {
+    public LiveData<Boolean> setActualOrder(Result result, String table) {
         MutableLiveData<Boolean> liveBool = new MutableLiveData<>();
-        getDocumentReference(actual).set(result).addOnSuccessListener(new OnSuccessListener<Void>() {
+        getDocumentReference(actual, table).set(result).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 liveBool.setValue(true);
@@ -154,9 +154,9 @@ public class ResultDataSource {
         return liveBool;
     }
 
-    public LiveData<Boolean> deleteActualOrder() {
+    public LiveData<Boolean> deleteActualOrder(String table) {
         MutableLiveData<Boolean> liveBool = new MutableLiveData<>();
-        getDocumentReference(actual).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+        getDocumentReference(actual, table).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 liveBool.setValue(true);

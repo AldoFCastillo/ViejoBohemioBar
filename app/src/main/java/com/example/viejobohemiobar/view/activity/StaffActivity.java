@@ -14,6 +14,7 @@ import android.os.Bundle;
 import com.example.viejobohemiobar.R;
 import com.example.viejobohemiobar.model.pojo.OrderLog;
 import com.example.viejobohemiobar.view.fragment.OrderFragment;
+import com.example.viejobohemiobar.view.fragment.RecyclerStaffFragment;
 import com.example.viejobohemiobar.view.fragment.StaffOrdersFragment;
 import com.example.viejobohemiobar.viewModel.ResultViewModel;
 import com.google.android.material.snackbar.Snackbar;
@@ -21,20 +22,20 @@ import com.google.android.material.snackbar.Snackbar;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class StaffActivity extends AppCompatActivity implements StaffOrdersFragment.listener, OrderFragment.listener {
+public class StaffActivity extends AppCompatActivity implements StaffOrdersFragment.listener, OrderFragment.listener, RecyclerStaffFragment.listener {
 
-    public static final String KEY_PATH = "path";
 
     private ResultViewModel resultViewModel;
     private FragmentManager fragmentManager;
-    private String path;
-    private String title = "";
+
 
 
     @BindView(R.id.toolbarStaff)
     Toolbar toolbar;
     @BindView(R.id.constraintStaff)
     public ConstraintLayout constraintStaff;
+    @BindView(R.id.constraintStaffActivity)
+    ConstraintLayout constraintStaffActivity;
 
 
     @Override
@@ -42,21 +43,22 @@ public class StaffActivity extends AppCompatActivity implements StaffOrdersFragm
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_staff);
         ButterKnife.bind(this);
+
         setToolBar();
 
-        Bundle bundle = getIntent().getExtras();
-        path = bundle.getString(KEY_PATH);
+        Snackbar.make(constraintStaff, "Registro de pedidos", Snackbar.LENGTH_LONG).show();
 
-        setSnackBar();
 
-        resultViewModel = ViewModelProviders.of(this).get(ResultViewModel.class);
+        setFragment(new StaffOrdersFragment());
+
+        /*resultViewModel = ViewModelProviders.of(this).get(ResultViewModel.class);
         resultViewModel.getOrderLog(path).observe(this, new Observer<OrderLog>() {
             @Override
             public void onChanged(OrderLog orderLog) {
                 StaffOrdersFragment staffOrdersFragment = StaffOrdersFragment.newInstance(orderLog, path);
                 setFragment(staffOrdersFragment);
             }
-        });
+        });*/
 
     }
 
@@ -67,18 +69,7 @@ public class StaffActivity extends AppCompatActivity implements StaffOrdersFragm
     }
 
 
-    private void setSnackBar() {
 
-        switch(path){
-            case "p": title = "Pedidos Pendientes";
-                break;
-            case "i": title = "Pedidos en proceso";
-                break;
-            case "c": title = "Pedidos cerrados";
-                break;
-        }
-        Snackbar.make(constraintStaff, title, Snackbar.LENGTH_LONG).show();
-    }
 
     public void setFragment(Fragment fragment) {
         fragmentManager = getSupportFragmentManager();

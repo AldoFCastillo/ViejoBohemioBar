@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#D3D0D0"
     android:id="@+id/constraintStaff"
+    android:orientation="vertical"
     tools:context=".view.fragment.StaffOrdersFragment">
 
     <TextView
@@ -16,30 +16,23 @@
         android:gravity="center"
         android:text="PEDIDOS"
         android:textSize="30sp"
-        android:background="#D3D0D0"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.07" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerStaffFragment"
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FFF"
+        android:id="@+id/appBarStaff"/>
+
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/viewPagerStaffTabs"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="80dp"
-        android:background="#D3D0D0"
-        app:layout_constraintTop_toBottomOf="@+id/textViewTitleStaff" />
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/textViewEmptyList"
-        android:layout_marginTop="80dp"
-        android:visibility="gone"
-        android:text="NO HAY ORDENES EN ESTA LISTA"
-        app:layout_constraintTop_toBottomOf="@+id/textViewTitleStaff"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        android:layout_marginTop="30dp" />
 
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

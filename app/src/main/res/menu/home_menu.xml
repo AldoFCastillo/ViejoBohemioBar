@@ -11,26 +11,22 @@
         <menu>
 
             <item
-                android:id="@+id/navigationViewPedidosPendientesItem"
-                android:title="Pedidos pendientes" />
+                android:id="@+id/navigationViewOrdersBacklog"
+                android:title="Registro de Pedidos" />
 
             <item
-                android:id="@+id/navigationViewPedidosPreparacionItem"
-                android:title="Pedidos en preparacion" />
+                android:id="@+id/registerMenuNavigation"
+                android:title="Registrar nuevo miembro" />
 
             <item
-                android:id="@+id/navigationViewPedidosEntregadosItem"
-                android:title="Pedidos entregados"
-                android:visible="true" />
+                android:id="@+id/changePassMenuNavigation"
+                android:title="Cambiar clave de pedidos" />
 
             <item
                 android:id="@+id/navigationViewCerrarSesionItem"
                 android:title="Cerrar Sesion"
                 android:visible="true" />
 
-            <item
-                android:id="@+id/registerMenuNavigation"
-                android:title="Registrar nuevo miembro" />
 
         </menu>
 

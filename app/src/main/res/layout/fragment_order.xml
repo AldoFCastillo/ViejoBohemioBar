@@ -33,7 +33,7 @@
             android:text="Cancelar Pedido"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/checkBoxNeedWait" />
+            app:layout_constraintTop_toBottomOf="@id/textInputLayoutPassOrder" />
 
         <TextView
             android:id="@+id/textViewTitleOrder"
@@ -160,6 +160,36 @@
             app:layout_constraintTop_toBottomOf="@id/recyclerViewOrder"
             tools:layout_editor_absoluteX="26dp"
             tools:layout_editor_absoluteY="356dp" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayoutPassOrder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="30dp"
+            android:backgroundTint="@color/colorTextoOscuro"
+            android:gravity="center"
+            android:textColorHint="@color/colorTextoOscuro"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/checkBoxNeedWait">
+
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editTextPassFragmentOrder"
+                android:layout_width="350dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="20dp"
+                android:backgroundTint="#FF3978FC"
+                android:hint="ingresa la clave"
+                android:inputType="textPassword"
+                android:textColor="@color/colorTextoOscuro"
+                android:textColorHint="@color/colorTextoOscuro"
+                android:textSize="20sp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
