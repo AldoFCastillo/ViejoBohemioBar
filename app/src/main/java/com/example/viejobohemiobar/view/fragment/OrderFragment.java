@@ -5,11 +5,9 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
+
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,22 +21,21 @@ import android.widget.Toast;
 import com.example.viejobohemiobar.R;
 import com.example.viejobohemiobar.model.pojo.Order;
 import com.example.viejobohemiobar.model.pojo.OrderLog;
-import com.example.viejobohemiobar.model.pojo.Product;
 import com.example.viejobohemiobar.model.pojo.Result;
-import com.example.viejobohemiobar.service.ConfigRecyclerView;
+import com.example.viejobohemiobar.utils.ConfigRecyclerView;
+import com.example.viejobohemiobar.utils.MenuUtils;
 import com.example.viejobohemiobar.view.adapter.ProductAdapter;
 import com.example.viejobohemiobar.viewModel.ResultViewModel;
 import com.example.viejobohemiobar.viewModel.UserViewModel;
-import com.google.firebase.auth.FirebaseAuth;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
 
 public class OrderFragment extends Fragment implements ProductAdapter.adapterListener {
 
@@ -52,11 +49,13 @@ public class OrderFragment extends Fragment implements ProductAdapter.adapterLis
     private ProductAdapter productAdapter;
     private String table = "1";
     private ResultViewModel resultViewModel;
+    private UserViewModel userViewModel;
     private listener listener;
     private String path;
     private String button;
     private String next;
     private int position;
+    private String stringTotal;
 
     @BindView(R.id.recyclerViewOrder)
     RecyclerView recyclerViewOrder;
@@ -111,7 +110,8 @@ public class OrderFragment extends Fragment implements ProductAdapter.adapterLis
         View view = inflater.inflate(R.layout.fragment_order, container, false);
         ButterKnife.bind(this, view);
 
-        resultViewModel = ViewModelProviders.of(this).get(ResultViewModel.class);
+        resultViewModel = new ViewModelProvider(this).get(ResultViewModel.class);
+        userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
         recyclerViewOrder = ConfigRecyclerView.getRecyclerView(recyclerViewOrder, getContext());
 
         if (order != null) {
@@ -125,28 +125,11 @@ public class OrderFragment extends Fragment implements ProductAdapter.adapterLis
     private void setMadeOrder() {
         productAdapter = new ProductAdapter(OrderFragment.this, order.getResult().getResults());
         recyclerViewOrder.setAdapter(productAdapter);
-        switch (path) {
-            case "p":
-                button = "Tomar Pedido";
-                next = "i";
-                break;
-            case "i":
-                button = "Pedido Entregado";
-                next = "c";
-                break;
-            case "c":
-                button = "Eliminar Pedido";
-                break;
-        }
+        setBottomButton();
 
         buttonToProcessOrder.setVisibility(View.VISIBLE);
         buttonToProcessOrder.setText(button);
-        buttonToProcessOrder.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                migrateOrder();
-            }
-        });
+        buttonToProcessOrder.setOnClickListener(v -> migrateOrder());
 
         textViewTotalOrder.setText(order.getTotal());
         //set RadioButtons
@@ -157,100 +140,77 @@ public class OrderFragment extends Fragment implements ProductAdapter.adapterLis
         editTextPass.setVisibility(View.GONE);
     }
 
+    private void setBottomButton() {
+        switch (path) {
+            case "p":
+                button = "Tomar Pedido";
+                next = "i";
+                break;
+            case "i":
+                button = "Pedido Entregado";
+                next = "c";
+                break;
+            case "c":
+                buttonToProcessOrder.setVisibility(View.INVISIBLE);
+                break;
+        }
+    }
+
     private void migrateOrder() {
 
-        resultViewModel.getOrderLog(path).observe(getViewLifecycleOwner(), new Observer<OrderLog>() {
-            @Override
-            public void onChanged(OrderLog orderLog) {
-                List<Order> orderList = orderLog.getOrderList();
-                orderList.remove(position);
-                orderLog.setOrderList(orderList);
-                resultViewModel.updateOrderLog(orderLog, path);
-                addOrderToLog(order, next);
-
-                //TODO back to StaffFragment
-            }
-        });
+        resultViewModel.getOrderLog(path);
+        getOrderLogObserver(order, next, true);
     }
 
     private void setToConfirmOrder() {
         path = "p";
         productAdapter = new ProductAdapter(OrderFragment.this, result.getResults());
-        editTextPass.setVisibility(View.VISIBLE);
         recyclerViewOrder.setAdapter(productAdapter);
+        editTextPass.setVisibility(View.VISIBLE);
         buttonToProcessOrder.setVisibility(View.INVISIBLE);
         buttonCancelOrder.setVisibility(View.VISIBLE);
         buttonConfirmOrder.setVisibility(View.VISIBLE);
-        String stringTotal = getTotal();
+        stringTotal = MenuUtils.getTotal(result);
         textViewTotalOrder.setText(stringTotal);
 
-        buttonConfirmOrder.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String pass = editTextPass.getText().toString();
-                confirmPass(pass).observe(getViewLifecycleOwner(), new Observer<Boolean>() {
-                    @Override
-                    public void onChanged(Boolean aBoolean) {
-                        if(aBoolean){
-                            String comments = editTextCommentsOrder.getText().toString();
-                            Date date = new Date();
-                            String id = table+date;
-                            Order actualOrder = Order.getOrderInstance(result, stringTotal, true, checkBoxNeedWait.isChecked(), comments, id, table, getTime());
-                            addOrderToLog(actualOrder, path);
-                        }else{
-                            Toast.makeText(getContext(), "Clave incorrecta!", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-
-            }
+        buttonConfirmOrder.setOnClickListener(v -> {
+            String pass = editTextPass.getText().toString();
+            confirmPass(pass);
         });
 
-        buttonCancelOrder.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getContext(), "Pedido Cancelado", Toast.LENGTH_SHORT).show();
-                listener.orderFragmentListener();
-            }
+        buttonCancelOrder.setOnClickListener(v -> {
+            Toast.makeText(getContext(), "Pedido Cancelado", Toast.LENGTH_SHORT).show();
+            listener.orderFragmentListener();
         });
     }
 
-    private LiveData<Boolean> confirmPass(String pass){
-        MutableLiveData<Boolean> liveBool = new MutableLiveData<>();
-        UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
-        userViewModel.getPassword().observe(this, new Observer<String>() {
-            @Override
-            public void onChanged(String s) {
-                if (s.equals(pass)){
-                    liveBool.setValue(true);
-                } else liveBool.setValue(false);
-            }
+
+    private void confirmPass(String pass) {
+        userViewModel.getPassword();
+        getPassObserver(pass);
+    }
+
+    private void getPassObserver(String pass) {
+        userViewModel.liveStringPass.observe(getViewLifecycleOwner(), s -> {
+            if (s.equals(pass)) {
+                String comments = editTextCommentsOrder.getText().toString();
+                Date date = new Date();
+                String id = table + date;
+                Order actualOrder = Order.getOrderInstance(result, stringTotal, true, checkBoxNeedWait.isChecked(), comments, id, table, MenuUtils.getTime());
+                addOrderToLog(actualOrder, path, false);
+            } else Toast.makeText(getContext(), "Clave incorrecta!", Toast.LENGTH_SHORT).show();
         });
-        return liveBool;
     }
 
-    private String getTotal(){
-        Double total = 0.0;
-        for (Product product : result.getResults()) {
-            String stringPrice = product.getPrice().substring(1);
-            double doble = Double.parseDouble(stringPrice);
-            total = total + doble;
-        }
-        return "$" + total;
+
+    private void addOrderToLog(Order actualOrder, String path, Boolean staff) {
+        resultViewModel.getOrderLog(path);
+        getOrderLogObserver(actualOrder, path, staff);
     }
 
-    private String getTime() {
-        Calendar calendario = Calendar.getInstance();
-        int hour = calendario.get(Calendar.HOUR_OF_DAY);
-        int minutes = calendario.get(Calendar.MINUTE);
-        String time = (hour + ":" + minutes);
-        return time;
-    }
-
-    private void addOrderToLog(Order actualOrder, String path) {
-        resultViewModel.getOrderLog(path).observe(getViewLifecycleOwner(), new Observer<OrderLog>() {
-            @Override
-            public void onChanged(OrderLog orderLog) {
+    private void getOrderLogObserver(Order actualOrder, String nextPath, Boolean staff) {
+        resultViewModel.orderLogData.observe(getViewLifecycleOwner(), orderLog -> {
+            if (path.equals(nextPath)) {
                 List<Order> orderList;
                 if (orderLog == null) {
                     orderLog = new OrderLog();
@@ -258,24 +218,33 @@ public class OrderFragment extends Fragment implements ProductAdapter.adapterLis
                 } else orderList = orderLog.getOrderList();
                 orderList.add(actualOrder);
                 orderLog.setOrderList(orderList);
-                updateOrderLog(orderLog, path);
-
-                //TODO PEDIR PASSWORD
+                updateOrderLog(orderLog, nextPath, staff);
+                if (staff) listener.orderFragmentListener();
+            } else {
+                List<Order> orderList = orderLog.getOrderList();
+                orderList.remove(position);
+                orderLog.setOrderList(orderList);
+                updateOrderLog(orderLog, path, staff);
+                path = nextPath;
+                addOrderToLog(order, nextPath, true);
             }
         });
     }
 
-    private void updateOrderLog(OrderLog orderLog, String path) {
-        resultViewModel.updateOrderLog(orderLog, path).observe(this, new Observer<Boolean>() {
-            @Override
-            public void onChanged(Boolean aBoolean) {
-                if (aBoolean) {
-                    Toast.makeText(getContext(), "Pedido Confirmado", Toast.LENGTH_SHORT).show();
-                    listener.orderFragmentListener();
-                } else Toast.makeText(getContext(), "Ocurrio un error", Toast.LENGTH_SHORT).show();
-            }
-        });
+    private void updateOrderLog(OrderLog orderLog, String path, Boolean staff) {
+        resultViewModel.updateOrderLog(orderLog, path);
+        updateOrderLogObserver(staff);
 
+    }
+
+    private void updateOrderLogObserver(Boolean staff) {
+        resultViewModel.orderLogBool.observe(getViewLifecycleOwner(), aBoolean -> {
+            if (aBoolean && !staff) {
+                Toast.makeText(getContext(), "Pedido Confirmado", Toast.LENGTH_SHORT).show();
+                listener.orderFragmentListener();
+
+            } else Toast.makeText(getContext(), "Ocurrio un error", Toast.LENGTH_SHORT).show();
+        });
     }
 
 

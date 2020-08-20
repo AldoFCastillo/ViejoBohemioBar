@@ -6,6 +6,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -16,7 +17,7 @@ import android.view.ViewGroup;
 import com.example.viejobohemiobar.R;
 import com.example.viejobohemiobar.model.pojo.Product;
 import com.example.viejobohemiobar.model.pojo.Result;
-import com.example.viejobohemiobar.service.ConfigRecyclerView;
+import com.example.viejobohemiobar.utils.ConfigRecyclerView;
 import com.example.viejobohemiobar.view.adapter.ProductAdapter;
 import com.example.viejobohemiobar.viewModel.ResultViewModel;
 
@@ -35,6 +36,7 @@ public class RecyclerMenuFragment extends Fragment implements ProductAdapter.ada
     private ProductAdapter productAdapter;
     private listener listener;
     private String type;
+    private ResultViewModel resultViewModel;
 
 
 
@@ -71,25 +73,27 @@ public class RecyclerMenuFragment extends Fragment implements ProductAdapter.ada
 
         recyclerView = ConfigRecyclerView.getRecyclerView(recyclerView, getContext());
 
-        ResultViewModel resultViewModel = ViewModelProviders.of(this).get(ResultViewModel.class);
+        resultViewModel = new ViewModelProvider(this).get(ResultViewModel.class);
 
-        resultViewModel.getResults().observe(getViewLifecycleOwner(), new Observer<Result>() {
-            @Override
-            public void onChanged(Result result) {
-                productList = result.getResults();
-                List<Product> selectionList = new ArrayList<>();
+        resultViewModel.getResults();
+        getResultsObserver();
 
-                for (Product product: productList) {
-                    if(product.getType().equals(type)){
-                        selectionList.add(product);
-                    }
-                }
-                productAdapter = new ProductAdapter(RecyclerMenuFragment.this, selectionList);
-                recyclerView.setAdapter(productAdapter);
-
-            }
-        });
         return view;
+    }
+
+    private void getResultsObserver(){
+        resultViewModel.resultData.observe(getViewLifecycleOwner(), result -> {
+            productList = result.getResults();
+            List<Product> selectionList = new ArrayList<>();
+
+            for (Product product: productList) {
+                if(product.getType().equals(type)){
+                    selectionList.add(product);
+                }
+            }
+            productAdapter = new ProductAdapter(RecyclerMenuFragment.this, selectionList);
+            recyclerView.setAdapter(productAdapter);
+        });
     }
 
 

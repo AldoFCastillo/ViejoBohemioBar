@@ -28,33 +28,31 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class OrderAdapter extends RecyclerView.Adapter {
+public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHolder> {
 
     private listener listener;
     private List<Order> orderList;
-    private String path;
-    private Order order;
 
-    public OrderAdapter(listener listener, List<Order> orderList, String path) {
+    public OrderAdapter(listener listener, List<Order> orderList) {
         this.listener = listener;
         this.orderList = orderList;
-        this.path = path;
     }
+
 
     @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public OrderViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
         View view = layoutInflater.inflate(R.layout.order_cell, parent, false);
         return new OrderViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull OrderViewHolder holder, int position) {
         Order order = orderList.get(position);
-        OrderViewHolder orderViewHolder = (OrderViewHolder) holder;
-        orderViewHolder.bind(order);
+        holder.bind(order);
     }
+
 
     @Override
     public int getItemCount() {
@@ -84,21 +82,10 @@ public class OrderAdapter extends RecyclerView.Adapter {
             ButterKnife.bind(this, itemView);
             OrderLog orderLog = new OrderLog();
             orderLog.setOrderList(orderList);
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    listener.orderAdapterListener(getAdapterPosition(), orderLog);
-                }
-            });
 
-            imageViewDelete.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    listener.orderAdapterDeleteListener(getAdapterPosition(),order);
+            itemView.setOnClickListener(v -> listener.orderAdapterListener(getAdapterPosition(), orderLog));
 
-
-                }
-            });
+            imageViewDelete.setOnClickListener(v -> listener.orderAdapterDeleteListener(getAdapterPosition(),order));
 
 
         }

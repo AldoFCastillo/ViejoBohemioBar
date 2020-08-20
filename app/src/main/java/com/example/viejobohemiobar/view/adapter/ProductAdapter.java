@@ -20,7 +20,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class ProductAdapter extends RecyclerView.Adapter {
+public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductViewHolder> {
 
     private adapterListener listener;
     private List<Product> productList;
@@ -41,11 +41,11 @@ public class ProductAdapter extends RecyclerView.Adapter {
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ProductViewHolder holder, int position) {
         Product product = productList.get(position);
-        ProductViewHolder productViewHolder = (ProductViewHolder) holder;
-        productViewHolder.bind(product);
+        holder.bind(product);
     }
+
 
     @Override
     public int getItemCount() {
@@ -69,13 +69,10 @@ public class ProductAdapter extends RecyclerView.Adapter {
 
             ButterKnife.bind(this, itemView);
 
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Result result = new Result();
-                    result.setResults(productList);
-                    listener.selection(getAdapterPosition(), result);
-                }
+            itemView.setOnClickListener(v -> {
+                Result result = new Result();
+                result.setResults(productList);
+                listener.selection(getAdapterPosition(), result);
             });
         }
 

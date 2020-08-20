@@ -10,8 +10,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".view.activity.StaffActivity"
-            android:parentActivityName=".view.activity.MainActivity"/>
+        <activity
+            android:name=".view.activity.StaffActivity"
+            android:parentActivityName=".view.activity.MainActivity" />
         <activity
             android:name=".view.activity.MenuActivity"
             android:parentActivityName=".view.activity.MainActivity" />
@@ -29,6 +30,7 @@
             android:screenOrientation="portrait"
             android:stateNotNeeded="true"
             tools:replace="android:screenOrientation" />
+
     </application>
 
 </manifest>

@@ -1,34 +1,42 @@
 package com.example.viejobohemiobar.dataSource;
 
-import androidx.annotation.NonNull;
-import androidx.lifecycle.LiveData;
+import android.util.Log;
+
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.viejobohemiobar.model.pojo.OrderLog;
 import com.example.viejobohemiobar.service.RetrofitInstance;
 import com.example.viejobohemiobar.model.pojo.Result;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.example.viejobohemiobar.utils.MenuUtils;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ResultDataSource {
-
+    public static final String TAG = "Result Data Source: ";
     private static final int FIRST_PAGE = 0;
     public static final String PATH = "34BGgFCk";
-    private MutableLiveData<Result> liveResult;
+
+    private String actual = "actual orders";
     private String pending = "pending orders";
     private String process = "in process orders";
     private String closed = "closed orders";
-    private String actual = "actual orders";
+    private MutableLiveData<Result> liveResult;
+    private MutableLiveData<Boolean> boolListenPending;
+    private MutableLiveData<OrderLog> liveOrderLog;
+    private MutableLiveData<Boolean> liveupOrderLogBool;
+    private MutableLiveData<Result> liveActualResult;
+    private MutableLiveData<Boolean> liveActualOrderBool;
+    private MutableLiveData<Boolean> liveDeleteBool;
 
 
-    public LiveData<Result> getProducts() {
+    private void getProducts() {
 
         liveResult = new MutableLiveData<>();
         RetrofitInstance.getInstance()
@@ -52,122 +60,129 @@ public class ResultDataSource {
                     }
                 });
 
-        return liveResult;
 
     }
 
+    public MutableLiveData<Result> refreshGetProducts() {
+        getProducts();
+        return liveResult;
+    }
 
-    public LiveData<OrderLog> getOrderLog(String path) {
 
-        path = stringToPath(path);
+    private void getOrderLog(String path) {
 
-        MutableLiveData<OrderLog> liveOrderLog = new MutableLiveData<>();
+        path = MenuUtils.stringToPath(path);
+        liveOrderLog = new MutableLiveData<>();
         DocumentReference docRef = getDocumentReference(path, path);
-        docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                liveOrderLog.setValue(documentSnapshot.toObject(OrderLog.class));
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                OrderLog orderLog = null;
-                liveOrderLog.setValue(orderLog);
-            }
-        });
+        docRef.get().addOnSuccessListener(documentSnapshot -> liveOrderLog.setValue(documentSnapshot.toObject(OrderLog.class)))
+                .addOnFailureListener(e -> {
+                    OrderLog orderLog = null;
+                    liveOrderLog.setValue(orderLog);
+                });
+    }
+
+    public MutableLiveData<OrderLog> refreshGetOrderLog(String path) {
+        getOrderLog(path);
         return liveOrderLog;
     }
 
-    public LiveData<Boolean> updateOrderLog(OrderLog orderLog, String path) {
-        path = stringToPath(path);
-        MutableLiveData<Boolean> liveBool = new MutableLiveData<>();
-        getDocumentReference(path, path).set(orderLog).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                liveBool.setValue(true);
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                liveBool.setValue(false);
-            }
-        });
-        return liveBool;
+
+    private void updateOrderLog(OrderLog orderLog, String path) {
+        path = MenuUtils.stringToPath(path);
+        liveupOrderLogBool = new MutableLiveData<>();
+        getDocumentReference(path, path).set(orderLog)
+                .addOnSuccessListener(aVoid -> liveupOrderLogBool.setValue(true))
+                .addOnFailureListener(e -> liveupOrderLogBool.setValue(false));
     }
 
-    private String stringToPath(String path){
-        switch(path){
-            case "p": path = pending;
-                break;
-            case "i": path = process;
-                break;
-            case "c": path = closed;
-                break;
-        }
-        return path;
+    public MutableLiveData<Boolean> refreshUpdateOrderLog(OrderLog orderLog, String path) {
+        updateOrderLog(orderLog, path);
+        return liveupOrderLogBool;
     }
-
-
 
 
     private DocumentReference getDocumentReference(String path, String table) {
-        String id = table;
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        return db.collection(path).document(id);
+        return db.collection(path).document(table);
     }
 
 
-
-
-
-    public LiveData<Result> getActualOrder(String table) {
-        MutableLiveData<Result> liveResult = new MutableLiveData<>();
+    public void getActualOrder(String table) {
+        liveActualResult = new MutableLiveData<>();
         DocumentReference docRef = getDocumentReference(actual, table);
-        docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                liveResult.setValue(documentSnapshot.toObject(Result.class));
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Result result = null;
-                liveResult.setValue(result);
-            }
-        });
-        return liveResult;
+        docRef.get().addOnSuccessListener(documentSnapshot -> liveActualResult.setValue(documentSnapshot.toObject(Result.class)))
+                .addOnFailureListener(e -> {
+                    Result result = null;
+                    liveActualResult.setValue(result);
+                });
     }
 
-    public LiveData<Boolean> setActualOrder(Result result, String table) {
-        MutableLiveData<Boolean> liveBool = new MutableLiveData<>();
-        getDocumentReference(actual, table).set(result).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                liveBool.setValue(true);
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                liveBool.setValue(false);
-            }
-        });
-        return liveBool;
+    public MutableLiveData<Result> refreshGetActualOrder(String table) {
+        getActualOrder(table);
+        return liveActualResult;
     }
 
-    public LiveData<Boolean> deleteActualOrder(String table) {
-        MutableLiveData<Boolean> liveBool = new MutableLiveData<>();
-        getDocumentReference(actual, table).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                liveBool.setValue(true);
+    private void setActualOrder(Result result, String table) {
+        liveActualOrderBool = new MutableLiveData<>();
+        getDocumentReference(actual, table).set(result)
+                .addOnSuccessListener(aVoid -> liveActualOrderBool.setValue(true))
+                .addOnFailureListener(e -> liveActualOrderBool.setValue(false));
+    }
+
+    public MutableLiveData<Boolean> refreshsetActualOrder(Result result, String table) {
+        setActualOrder(result, table);
+        return liveActualOrderBool;
+    }
+
+    private void deleteActualOrder(String table) {
+        liveDeleteBool = new MutableLiveData<>();
+        getDocumentReference(actual, table).delete()
+                .addOnSuccessListener(aVoid -> liveDeleteBool.setValue(true))
+                .addOnFailureListener(e -> liveDeleteBool.setValue(false));
+    }
+
+    public MutableLiveData<Boolean> refresehDeleteActualOrder(String table) {
+        deleteActualOrder(table);
+        return liveDeleteBool;
+    }
+
+    private void listenPending() {
+
+        AtomicBoolean isFirstListener = new AtomicBoolean(true);
+
+        boolListenPending = new MutableLiveData<>();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection(pending).addSnapshotListener((value, e) -> {
+
+            if (isFirstListener.get()) {
+                isFirstListener.set(false);
+                return;
             }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                liveBool.setValue(false);
+            if (e != null) {
+                Log.w(TAG, "Listen failed.", e);
+                boolListenPending.setValue(null);
             }
+            if (value != null) {
+                for (DocumentChange dc : value.getDocumentChanges()) {
+                    switch (dc.getType()) {
+                        case ADDED:
+                            boolListenPending.setValue(true);
+                            Log.d(TAG, "Order Added");
+                            break;
+                        case REMOVED:
+                            boolListenPending.setValue(false);
+                            break;
+                    }
+                }
+            }
+
         });
-        return liveBool;
+
+    }
+
+    public MutableLiveData<Boolean> refreshListenPending() {
+        listenPending();
+        return boolListenPending;
     }
 }
 

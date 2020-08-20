@@ -25,7 +25,6 @@ import butterknife.ButterKnife;
 public class StaffActivity extends AppCompatActivity implements StaffOrdersFragment.listener, OrderFragment.listener, RecyclerStaffFragment.listener {
 
 
-    private ResultViewModel resultViewModel;
     private FragmentManager fragmentManager;
 
 
@@ -50,15 +49,6 @@ public class StaffActivity extends AppCompatActivity implements StaffOrdersFragm
 
 
         setFragment(new StaffOrdersFragment());
-
-        /*resultViewModel = ViewModelProviders.of(this).get(ResultViewModel.class);
-        resultViewModel.getOrderLog(path).observe(this, new Observer<OrderLog>() {
-            @Override
-            public void onChanged(OrderLog orderLog) {
-                StaffOrdersFragment staffOrdersFragment = StaffOrdersFragment.newInstance(orderLog, path);
-                setFragment(staffOrdersFragment);
-            }
-        });*/
 
     }
 
@@ -88,7 +78,15 @@ public class StaffActivity extends AppCompatActivity implements StaffOrdersFragm
     }
 
     @Override
-    public void orderFragmentListener() {
+    public void onBackPressed() {
+        Fragment fragment = fragmentManager.findFragmentById(R.id.containerFragmentStaffActivity);
+        if(fragment instanceof OrderFragment){
+            setFragment(new StaffOrdersFragment());
+        }else super.onBackPressed();
+    }
 
+    @Override
+    public void orderFragmentListener() {
+        setFragment(new StaffOrdersFragment());
     }
 }

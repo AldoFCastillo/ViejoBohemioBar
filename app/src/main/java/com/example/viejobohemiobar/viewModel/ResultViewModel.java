@@ -2,6 +2,7 @@ package com.example.viejobohemiobar.viewModel;
 
 import androidx.lifecycle.LiveData;
 
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.viejobohemiobar.dataSource.ResultDataSource;
@@ -12,41 +13,54 @@ import com.example.viejobohemiobar.model.pojo.Result;
 public class ResultViewModel extends ViewModel {
 
     private ResultDataSource resultDataSource = new ResultDataSource();
+    public MutableLiveData<Boolean> dbListener = new MutableLiveData<>();
+    public MutableLiveData<OrderLog> orderLogData = new MutableLiveData<>();
+    public MutableLiveData<Boolean> orderLogBool = new MutableLiveData<>();
+    public MutableLiveData<Result> resultData = new MutableLiveData<>();
+    public MutableLiveData<Result> resultActualData = new MutableLiveData<>();
+    public MutableLiveData<Boolean> updateActualOrderBool = new MutableLiveData<>();
+    public MutableLiveData<Boolean> deleteActualOrderBool = new MutableLiveData<>();
 
 
     public ResultViewModel() {
 
     }
 
-    public LiveData<Result> getResults() {
-        return resultDataSource.getProducts();
+    public void getResults() {
+
+        resultData = resultDataSource.refreshGetProducts();
     }
 
 
-    public LiveData<OrderLog> getOrderLog(String path) {
+    public void getOrderLog(String path) {
 
-        return resultDataSource.getOrderLog(path);
+        orderLogData = resultDataSource.refreshGetOrderLog(path);
     }
 
 
-    public LiveData<Boolean> updateOrderLog(OrderLog orderLog, String path) {
+    public void updateOrderLog(OrderLog orderLog, String path) {
 
-        return resultDataSource.updateOrderLog(orderLog, path);
+        orderLogBool = resultDataSource.refreshUpdateOrderLog(orderLog, path);
     }
 
-    public LiveData<Result> getActualOrder(String table) {
+    public void getActualOrder(String table) {
 
-        return resultDataSource.getActualOrder(table);
+        resultActualData = resultDataSource.refreshGetActualOrder(table);
     }
 
-    public LiveData<Boolean> updateActualOrder(Result result, String table) {
+    public void updateActualOrder(Result result, String table) {
 
-        return resultDataSource.setActualOrder(result, table);
+        updateActualOrderBool = resultDataSource.refreshsetActualOrder(result, table);
     }
 
-    public LiveData<Boolean> deleteActualOrder (String table){
+    public void deleteActualOrder(String table) {
 
-        return resultDataSource.deleteActualOrder(table);
+        deleteActualOrderBool = resultDataSource.refresehDeleteActualOrder(table);
+    }
+
+    public void listenPending() {
+        dbListener = resultDataSource.refreshListenPending();
+
     }
 
 

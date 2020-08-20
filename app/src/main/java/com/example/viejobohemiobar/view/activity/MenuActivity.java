@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager.widget.ViewPager;
 
@@ -81,12 +82,12 @@ public class MenuActivity extends AppCompatActivity implements RecyclerMenuFragm
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.itemToolbarYourOrder:
-                ResultViewModel resultViewModel = ViewModelProviders.of(this).get(ResultViewModel.class);
+                ResultViewModel resultViewModel = new ViewModelProvider(this).get(ResultViewModel.class);
                 resultViewModel.getActualOrder(table).observe(this, new Observer<Result>() {
                     @Override
                     public void onChanged(Result result) {
                         if (result != null) {
-                            OrderFragment orderFragment = OrderFragment.newInstance(result, "", 1);
+                            OrderFragment orderFragment = OrderFragment.newInstance(result, "", 0);
                             setFragment(orderFragment);
                             Toast.makeText(MenuActivity.this, "Tu pedido", Toast.LENGTH_SHORT).show();
                         } else
@@ -107,23 +108,6 @@ public class MenuActivity extends AppCompatActivity implements RecyclerMenuFragm
     }
 
 
-    @Override
-    public void onBackPressed() {
-        if (backPressedTime + 2000 > System.currentTimeMillis()) {
-            backToast.cancel();
-            //Fragment fragment = fragmentManager.findFragmentById(R.id.containerFragmentMain);
-            super.onBackPressed();
-
-        } else {
-            backToast = Toast.makeText(getBaseContext(), "Presiona atras nuevamente para salir", Toast.LENGTH_SHORT);
-            backToast.show();
-            setFragment(new MenuFragment());
-
-        }
-        backPressedTime = System.currentTimeMillis();
-    }
-
-
 
     @Override
     public void recyclerMenuListener(Integer adapterPosition, Result result) {
@@ -133,7 +117,8 @@ public class MenuActivity extends AppCompatActivity implements RecyclerMenuFragm
 
     @Override
     public void orderFragmentListener() {
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
+        onBackPressed();
+       /* Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);*/
     }
 }

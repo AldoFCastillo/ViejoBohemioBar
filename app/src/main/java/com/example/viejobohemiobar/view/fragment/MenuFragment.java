@@ -83,7 +83,7 @@ public class MenuFragment extends Fragment {
 
 
 
-    public class ViewPagerAdapterTabs extends FragmentStatePagerAdapter {
+    public static class ViewPagerAdapterTabs extends FragmentStatePagerAdapter {
 
         String[] titlePages = {"Hamburguesas","Extras","Bebidas"};
 

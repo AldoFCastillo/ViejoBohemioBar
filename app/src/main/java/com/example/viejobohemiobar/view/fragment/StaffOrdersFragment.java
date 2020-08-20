@@ -6,32 +6,25 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
-import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.viejobohemiobar.R;
 import com.example.viejobohemiobar.model.pojo.Order;
 import com.example.viejobohemiobar.model.pojo.OrderLog;
-import com.example.viejobohemiobar.service.ConfigRecyclerView;
 import com.example.viejobohemiobar.view.adapter.OrderAdapter;
 import com.example.viejobohemiobar.viewModel.ResultViewModel;
 import com.google.android.material.appbar.AppBarLayout;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
-
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -89,7 +82,6 @@ public class StaffOrdersFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_staff_orders, container, false);
         ButterKnife.bind(this, view);
 
-        resultViewModel = ViewModelProviders.of(this).get(ResultViewModel.class);
 
         TabLayout tabLayout = new TabLayout(getActivity());
         tabLayout.setTabTextColors(Color.parseColor("#000000"), Color.parseColor("#000000"));
