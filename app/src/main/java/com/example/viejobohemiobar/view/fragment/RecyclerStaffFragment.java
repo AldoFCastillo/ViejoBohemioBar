@@ -25,6 +25,7 @@ import com.example.viejobohemiobar.view.adapter.OrderAdapter;
 import com.example.viejobohemiobar.viewModel.ResultViewModel;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -37,11 +38,10 @@ public class RecyclerStaffFragment extends Fragment implements OrderAdapter.list
 
     private ResultViewModel resultViewModel;
     private String path;
-    private String title;
-    private OrderAdapter orderAdapter;
     private Order order;
     private int adapterPosition;
     private listener listener;
+    private List<Order> orderList = new ArrayList<>();
 
 
     @BindView(R.id.recyclerStaffFragment)
@@ -82,43 +82,36 @@ public class RecyclerStaffFragment extends Fragment implements OrderAdapter.list
 
 
         resultViewModel.getOrderLog(path);
-        getOrderLogObserver(false);
+        getOrderLogObserver();
 
 
         return view;
     }
 
-    private void getOrderLogObserver(Boolean delete) {
+    private void getOrderLogObserver() {
         resultViewModel.orderLogData.observe(getViewLifecycleOwner(), orderLog -> {
-            if (!delete) {
                 if (orderLog != null && orderLog.getOrderList()!=null) {
                     if (orderLog.getOrderList().isEmpty() ) {
                         textViewEmptyList.setVisibility(View.VISIBLE);
-                    } else setAdapterRecycler(orderLog.getOrderList());
+                    } else{
+                        this.orderList = orderLog.getOrderList();
+                        setAdapterRecycler(orderList);
+                    }
                 } else textViewEmptyList.setVisibility(View.VISIBLE);
-
-            } else {
-                List<Order> newOrderList = orderLog.getOrderList();
-                newOrderList.remove(adapterPosition);
-                orderLog.setOrderList(newOrderList);
-                updateOrderLog(orderLog, newOrderList);
-            }
         });
 
     }
 
-    private void updateOrderLog(OrderLog orderLog,List<Order> newOrderList) {
-        resultViewModel.updateOrderLog(orderLog, path);
-        updateOrderLogObserver(newOrderList);
-
+    private void deleteOrder(){
+        resultViewModel.deleteOrder(path, order.getId());
+        deleteOrderObserver();
     }
 
-    private void updateOrderLogObserver(List<Order> newOrderList) {
-        resultViewModel.orderLogBool.observe(getViewLifecycleOwner(), aBoolean -> {
-            if (aBoolean) {
-                Toast.makeText(getContext(), "Pedido eliminado!", Toast.LENGTH_SHORT).show();
-                setAdapterRecycler(newOrderList);
-            }
+    private void deleteOrderObserver(){
+        resultViewModel.deleteOrderBool.observe(this, aBoolean -> {
+            Toast.makeText(getContext(), "Pedido eliminado!", Toast.LENGTH_SHORT).show();
+            orderList.remove(adapterPosition);
+            setAdapterRecycler(orderList);
         });
     }
 
@@ -126,7 +119,7 @@ public class RecyclerStaffFragment extends Fragment implements OrderAdapter.list
     private void setAdapterRecycler(List<Order> orderList) {
         textViewEmptyList.setVisibility(View.GONE);
         recyclerView = ConfigRecyclerView.getRecyclerView(recyclerView, getContext());
-        orderAdapter = new OrderAdapter(RecyclerStaffFragment.this, orderList);
+        OrderAdapter orderAdapter = new OrderAdapter(RecyclerStaffFragment.this, orderList);
         recyclerView.setAdapter(orderAdapter);
     }
 
@@ -147,8 +140,7 @@ public class RecyclerStaffFragment extends Fragment implements OrderAdapter.list
         this.adapterPosition = adapterPosition;
         Snackbar mySnackbar = Snackbar.make(constraintLayoutStaff, "Confirma que desea eliminar la orden?", Snackbar.LENGTH_SHORT);
         mySnackbar.setAction("ACEPTAR", v -> {
-            resultViewModel.getOrderLog(path);
-            getOrderLogObserver(true);
+            deleteOrder();
         });
         mySnackbar.show();
     }

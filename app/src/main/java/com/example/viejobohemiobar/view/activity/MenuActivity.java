@@ -30,8 +30,6 @@ import com.example.viejobohemiobar.view.fragment.RecyclerMenuFragment;
 import com.example.viejobohemiobar.view.fragment.StaffOrdersFragment;
 import com.example.viejobohemiobar.viewModel.ResultViewModel;
 
-import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -43,8 +41,6 @@ public class MenuActivity extends AppCompatActivity implements RecyclerMenuFragm
 
     private String table;
     private ResultViewModel resultViewModel;
-    private FragmentManager fragmentManager;
-    private MenuFragment menuFragment = new MenuFragment();
     private long backPressedTime;
     private Toast backToast;
 
@@ -100,7 +96,7 @@ public class MenuActivity extends AppCompatActivity implements RecyclerMenuFragm
     private void getActualOrderObserver() {
         resultViewModel.resultActualData.observe(this, result -> {
             if (result != null) {
-                OrderFragment orderFragment = OrderFragment.newInstance(result, "", 0);
+                OrderFragment orderFragment = OrderFragment.newInstance(result);
                 setFragment(orderFragment);
                 Toast.makeText(MenuActivity.this, "Tu pedido", Toast.LENGTH_SHORT).show();
             } else

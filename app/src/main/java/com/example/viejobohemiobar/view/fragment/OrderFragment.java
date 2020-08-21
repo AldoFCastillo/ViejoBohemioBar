@@ -40,21 +40,13 @@ import butterknife.ButterKnife;
 public class OrderFragment extends Fragment implements ProductAdapter.adapterListener {
 
     public static final String ARG_SERIAL = "serial";
-    public static final String ARG_PATH = "path";
-    public static final String ARG_POSITION = "position";
-
 
     private Result result;
-    private Order order;
-    private ProductAdapter productAdapter;
     private String table = "1";
     private ResultViewModel resultViewModel;
     private UserViewModel userViewModel;
     private listener listener;
     private String path;
-    private String button;
-    private String next;
-    private int position;
     private String stringTotal;
 
     @BindView(R.id.recyclerViewOrder)
@@ -80,12 +72,10 @@ public class OrderFragment extends Fragment implements ProductAdapter.adapterLis
         // Required empty public constructor
     }
 
-    public static OrderFragment newInstance(Serializable result, String path, int position) {
+    public static OrderFragment newInstance(Serializable result) {
         OrderFragment fragment = new OrderFragment();
         Bundle args = new Bundle();
         args.putSerializable(ARG_SERIAL, result);
-        args.putString(ARG_PATH, path);
-        args.putInt(ARG_POSITION, position);
         fragment.setArguments(args);
         return fragment;
     }
@@ -95,15 +85,9 @@ public class OrderFragment extends Fragment implements ProductAdapter.adapterLis
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            if (getArguments().getSerializable(ARG_SERIAL) instanceof Result) {
-                this.result = (Result) getArguments().getSerializable(ARG_SERIAL);
-                this.order = null;
-            } else {
-                this.order = (Order) getArguments().getSerializable(ARG_SERIAL);
-                this.path = getArguments().getString(ARG_PATH);
-                this.position = getArguments().getInt(ARG_POSITION);
-            }
+            this.result = (Result) getArguments().getSerializable(ARG_SERIAL);
         }
+
     }
 
     @Override
@@ -122,49 +106,10 @@ public class OrderFragment extends Fragment implements ProductAdapter.adapterLis
         return view;
     }
 
-    private void setMadeOrder() {
-        productAdapter = new ProductAdapter(OrderFragment.this, order.getResult().getResults());
-        recyclerViewOrder.setAdapter(productAdapter);
-
-        List<Product> resultList = order.getResult().getResults();
-
-
-        setBottomButton();
-
-        buttonToProcessOrder.setVisibility(View.VISIBLE);
-        buttonToProcessOrder.setText(button);
-      //  buttonToProcessOrder.setOnClickListener(v -> migrateOrder());
-
-        textViewTotalOrder.setText(order.getTotal());
-        //set RadioButtons
-        editTextCommentsOrder.setText(order.getComments());
-        checkBoxNeedWait.setChecked(order.getCallWait());
-        checkBoxNeedWait.setEnabled(false);
-        buttonCancelOrder.setVisibility(View.INVISIBLE);
-        buttonConfirmOrder.setVisibility(View.INVISIBLE);
-        editTextPass.setVisibility(View.GONE);
-    }
-
-    private void setBottomButton() {
-        switch (path) {
-            case "p":
-                button = "Tomar Pedido";
-                next = "i";
-                break;
-            case "i":
-                button = "Pedido Entregado";
-                next = "c";
-                break;
-            case "c":
-                buttonToProcessOrder.setVisibility(View.INVISIBLE);
-                break;
-        }
-    }
-
 
     private void setViews() {
         path = "p";
-        productAdapter = new ProductAdapter(OrderFragment.this, result.getResults());
+        ProductAdapter productAdapter = new ProductAdapter(OrderFragment.this, result.getResults());
         recyclerViewOrder.setAdapter(productAdapter);
         editTextPass.setVisibility(View.VISIBLE);
         buttonToProcessOrder.setVisibility(View.INVISIBLE);
@@ -204,29 +149,6 @@ public class OrderFragment extends Fragment implements ProductAdapter.adapterLis
     }
 
 
-
-
-    private void getOrderLogObserver(Order actualOrder, String nextPath) {
-      //  resultViewModel.orderLogData.observe(getViewLifecycleOwner(), orderLog -> {
-
-                /*List<Order> orderList;
-                if (orderLog == null || orderLog.getOrderList() == null) {
-                    orderLog = new OrderLog();
-                    orderList = new ArrayList<>();
-                } else orderList = orderLog.getOrderList();
-                orderList.add(actualOrder);
-                orderLog.setOrderList(orderList);
-                updateOrderLog(orderLog, nextPath, staff);
-                if (staff) listener.orderFragmentListener();*/
-
-    }
-
-    /*private void updateOrderLog(OrderLog orderLog, String path, Boolean staff) {
-        resultViewModel.updateOrderLog(orderLog, path);
-        updateOrderLogObserver(staff);
-
-    }*/
-
     private void updateOrderLog(Order order, String path) {
         resultViewModel.updateOrderLog(order, path, order.getId());
         updateOrderLogObserver();
@@ -242,8 +164,6 @@ public class OrderFragment extends Fragment implements ProductAdapter.adapterLis
             } else Toast.makeText(getContext(), "Ocurrio un error", Toast.LENGTH_SHORT).show();
         });
     }
-
-
 
 
     @Override
