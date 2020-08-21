@@ -148,16 +148,10 @@ public class ResultDataSource {
 
     private void listenPending() {
 
-        AtomicBoolean isFirstListener = new AtomicBoolean(true);
-
         boolListenPending = new MutableLiveData<>();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection(pending).addSnapshotListener((value, e) -> {
 
-            if (isFirstListener.get()) {
-                isFirstListener.set(false);
-                return;
-            }
             if (e != null) {
                 Log.w(TAG, "Listen failed.", e);
                 boolListenPending.setValue(null);

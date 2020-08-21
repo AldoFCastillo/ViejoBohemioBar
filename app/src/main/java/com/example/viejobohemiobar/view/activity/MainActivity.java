@@ -46,6 +46,8 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -100,7 +102,6 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
 
 
     private void setDBListener() {
-
         if (checkUSer()) {
             resultViewModel.listenPending();
             dBListenerObserver();
@@ -108,7 +109,12 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
     }
 
     private void dBListenerObserver(){
+        AtomicBoolean isFirstListener = new AtomicBoolean(true);
         resultViewModel.dbListener.observe(this, aBoolean -> {
+            if (isFirstListener.get()) {
+                isFirstListener.set(false);
+                return;
+            }
             if (aBoolean != null) {
                 if (aBoolean) {
                     Toast.makeText(MainActivity.this, "NUEVO PEDIDO", Toast.LENGTH_SHORT).show();
@@ -265,7 +271,6 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
 
     //TODO fragments de confirmacion. SU PEDIDO HA SIDO CONFIRMADO, PRONTO SERA LLEVADO A SU MESA(SI DESEA HACER UN NUEVO PEDIDO VUELVA A CAPTURAR EL CODIGO QR DE SU MESA)
     //TODO progressbar
-    //TODO CAMBIAR RECYCLER DEL ORDER POR LISTA DE PRODUCTOS EN STAFF
 
 
     @Override

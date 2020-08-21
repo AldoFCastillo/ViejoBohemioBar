@@ -27,6 +27,7 @@ import com.example.viejobohemiobar.view.fragment.ProductDetailsFragment;
 import com.example.viejobohemiobar.model.pojo.Product;
 import com.example.viejobohemiobar.model.pojo.Result;
 import com.example.viejobohemiobar.view.fragment.RecyclerMenuFragment;
+import com.example.viejobohemiobar.view.fragment.StaffOrdersFragment;
 import com.example.viejobohemiobar.viewModel.ResultViewModel;
 
 import java.util.ArrayList;
@@ -40,9 +41,12 @@ public class MenuActivity extends AppCompatActivity implements RecyclerMenuFragm
     public static final String ARG_TABLE = "table";
 
 
+    private String table;
+    private ResultViewModel resultViewModel;
+    private FragmentManager fragmentManager;
+    private MenuFragment menuFragment = new MenuFragment();
     private long backPressedTime;
     private Toast backToast;
-    private String table;
 
 
     @BindView(R.id.toolbarDetails)
@@ -55,11 +59,14 @@ public class MenuActivity extends AppCompatActivity implements RecyclerMenuFragm
 
         ButterKnife.bind(this);
 
+        resultViewModel = new ViewModelProvider(this).get(ResultViewModel.class);
+
         Bundle bundle = getIntent().getExtras();
         table = bundle.getString(ARG_TABLE);
 
 
         setToolBar();
+
         setFragment(new MenuFragment());
         Toast.makeText(MenuActivity.this, "Ya podes armar tu pedido", Toast.LENGTH_SHORT).show();
 
@@ -82,23 +89,24 @@ public class MenuActivity extends AppCompatActivity implements RecyclerMenuFragm
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.itemToolbarYourOrder:
-                ResultViewModel resultViewModel = new ViewModelProvider(this).get(ResultViewModel.class);
-                resultViewModel.getActualOrder(table).observe(this, new Observer<Result>() {
-                    @Override
-                    public void onChanged(Result result) {
-                        if (result != null) {
-                            OrderFragment orderFragment = OrderFragment.newInstance(result, "", 0);
-                            setFragment(orderFragment);
-                            Toast.makeText(MenuActivity.this, "Tu pedido", Toast.LENGTH_SHORT).show();
-                        } else
-                            Toast.makeText(MenuActivity.this, "Aun no has agregado ningun producto", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                resultViewModel.getActualOrder(table);
+                getActualOrderObserver();
                 return true;
-
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void getActualOrderObserver() {
+        resultViewModel.resultActualData.observe(this, result -> {
+            if (result != null) {
+                OrderFragment orderFragment = OrderFragment.newInstance(result, "", 0);
+                setFragment(orderFragment);
+                Toast.makeText(MenuActivity.this, "Tu pedido", Toast.LENGTH_SHORT).show();
+            } else
+                Toast.makeText(MenuActivity.this, "Aun no has agregado ningun producto", Toast.LENGTH_SHORT).show();
+
+        });
     }
 
     @Override
@@ -108,11 +116,25 @@ public class MenuActivity extends AppCompatActivity implements RecyclerMenuFragm
     }
 
 
-
     @Override
     public void recyclerMenuListener(Integer adapterPosition, Result result) {
         DetailsViewPagerFragment detailsViewPagerFragment = DetailsViewPagerFragment.newInstance(adapterPosition, result, table);
         setFragment(detailsViewPagerFragment);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (backPressedTime + 2000 > System.currentTimeMillis()) {
+            backToast.cancel();
+            super.onBackPressed();
+
+        } else {
+            backToast = Toast.makeText(getBaseContext(), "Presiona atras nuevamente para salir", Toast.LENGTH_SHORT);
+            backToast.show();
+            setFragment(new MenuFragment());
+        }
+        backPressedTime = System.currentTimeMillis();
+
     }
 
     @Override

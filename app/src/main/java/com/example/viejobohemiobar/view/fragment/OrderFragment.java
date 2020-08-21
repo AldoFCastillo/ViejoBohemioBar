@@ -15,12 +15,14 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.viejobohemiobar.R;
 import com.example.viejobohemiobar.model.pojo.Order;
 import com.example.viejobohemiobar.model.pojo.OrderLog;
+import com.example.viejobohemiobar.model.pojo.Product;
 import com.example.viejobohemiobar.model.pojo.Result;
 import com.example.viejobohemiobar.utils.ConfigRecyclerView;
 import com.example.viejobohemiobar.utils.MenuUtils;
@@ -73,6 +75,8 @@ public class OrderFragment extends Fragment implements ProductAdapter.adapterLis
     Button buttonToProcessOrder;
     @BindView(R.id.editTextPassFragmentOrder)
     EditText editTextPass;
+    @BindView(R.id.radioButtonEfectivo)
+    RadioButton radioButtonEfectivo;
 
     public OrderFragment() {
         // Required empty public constructor
@@ -125,6 +129,10 @@ public class OrderFragment extends Fragment implements ProductAdapter.adapterLis
     private void setMadeOrder() {
         productAdapter = new ProductAdapter(OrderFragment.this, order.getResult().getResults());
         recyclerViewOrder.setAdapter(productAdapter);
+
+        List<Product> resultList = order.getResult().getResults();
+
+
         setBottomButton();
 
         buttonToProcessOrder.setVisibility(View.VISIBLE);
@@ -134,7 +142,8 @@ public class OrderFragment extends Fragment implements ProductAdapter.adapterLis
         textViewTotalOrder.setText(order.getTotal());
         //set RadioButtons
         editTextCommentsOrder.setText(order.getComments());
-        checkBoxNeedWait.setActivated(order.getCallWait());
+        checkBoxNeedWait.setChecked(order.getCallWait());
+        checkBoxNeedWait.setEnabled(false);
         buttonCancelOrder.setVisibility(View.INVISIBLE);
         buttonConfirmOrder.setVisibility(View.INVISIBLE);
         editTextPass.setVisibility(View.GONE);
@@ -196,7 +205,8 @@ public class OrderFragment extends Fragment implements ProductAdapter.adapterLis
                 String comments = editTextCommentsOrder.getText().toString();
                 Date date = new Date();
                 String id = table + date;
-                Order actualOrder = Order.getOrderInstance(result, stringTotal, true, checkBoxNeedWait.isChecked(), comments, id, table, MenuUtils.getTime());
+                Boolean cash = radioButtonEfectivo.isChecked();
+                Order actualOrder = Order.getOrderInstance(result, stringTotal, cash, checkBoxNeedWait.isChecked(), comments, id, table, MenuUtils.getTime());
                 addOrderToLog(actualOrder, path, false);
             } else Toast.makeText(getContext(), "Clave incorrecta!", Toast.LENGTH_SHORT).show();
         });

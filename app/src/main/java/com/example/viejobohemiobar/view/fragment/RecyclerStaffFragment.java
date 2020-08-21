@@ -33,11 +33,8 @@ import butterknife.ButterKnife;
 
 public class RecyclerStaffFragment extends Fragment implements OrderAdapter.listener {
 
-    private static final String ARG_PARAM1 = "param1";
     public static final String ARG_PATH = "path";
 
-    private String mParam1;
-    private String mParam2;
     private ResultViewModel resultViewModel;
     private String path;
     private String title;

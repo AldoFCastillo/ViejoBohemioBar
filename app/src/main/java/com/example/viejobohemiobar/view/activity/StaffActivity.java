@@ -15,6 +15,7 @@ import com.example.viejobohemiobar.R;
 import com.example.viejobohemiobar.model.pojo.OrderLog;
 import com.example.viejobohemiobar.view.fragment.OrderFragment;
 import com.example.viejobohemiobar.view.fragment.RecyclerStaffFragment;
+import com.example.viejobohemiobar.view.fragment.StaffOrderFragment;
 import com.example.viejobohemiobar.view.fragment.StaffOrdersFragment;
 import com.example.viejobohemiobar.viewModel.ResultViewModel;
 import com.google.android.material.snackbar.Snackbar;
@@ -26,7 +27,6 @@ public class StaffActivity extends AppCompatActivity implements StaffOrdersFragm
 
 
     private FragmentManager fragmentManager;
-
 
 
     @BindView(R.id.toolbarStaff)
@@ -72,15 +72,15 @@ public class StaffActivity extends AppCompatActivity implements StaffOrdersFragm
 
     @Override
     public void StaffOrdersFragmentListener(Integer adapterPosition, OrderLog orderLog, String path) {
-        OrderFragment orderFragment = OrderFragment.newInstance(orderLog.getOrderList().get(adapterPosition), path, adapterPosition);
-        setFragment(orderFragment);
+        StaffOrderFragment staffOrderFragment = StaffOrderFragment.newInstance(orderLog.getOrderList().get(adapterPosition), path, adapterPosition);
+        setFragment(staffOrderFragment);
 
     }
 
     @Override
     public void onBackPressed() {
         Fragment fragment = fragmentManager.findFragmentById(R.id.containerFragmentStaffActivity);
-        if(fragment instanceof OrderFragment){
+        if(fragment instanceof StaffOrderFragment){
             setFragment(new StaffOrdersFragment());
         }else super.onBackPressed();
     }

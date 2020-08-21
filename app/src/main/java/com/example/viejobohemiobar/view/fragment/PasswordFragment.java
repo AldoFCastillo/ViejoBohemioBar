@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.view.LayoutInflater;
@@ -22,11 +23,7 @@ import butterknife.ButterKnife;
 
 public class PasswordFragment extends Fragment {
 
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    private String mParam1;
-    private String mParam2;
+    private UserViewModel userViewModel;
 
     @BindView(R.id.editTextFragmentPass)
     EditText editTextFragmentPass;
@@ -37,23 +34,6 @@ public class PasswordFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static PasswordFragment newInstance(String param1, String param2) {
-        PasswordFragment fragment = new PasswordFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -62,24 +42,22 @@ public class PasswordFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_password, container, false);
         ButterKnife.bind(this, view);
 
-        UserViewModel userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+        userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
 
-        buttonAcceptPass.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String pass = editTextFragmentPass.getText().toString();
-
-                userViewModel.changePassword(pass).observe(getViewLifecycleOwner(), new Observer<Boolean>() {
-                    @Override
-                    public void onChanged(Boolean aBoolean) {
-                        if (aBoolean) {
-                            Toast.makeText(getContext(), "Exito!", Toast.LENGTH_SHORT).show();
-                        } else Toast.makeText(getContext(), "Error", Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
+        buttonAcceptPass.setOnClickListener(v -> {
+            String pass = editTextFragmentPass.getText().toString();
+            userViewModel.changePassword(pass);
+            changePasswordObserver();
         });
 
         return view;
+    }
+
+    private void changePasswordObserver() {
+        userViewModel.liveChangePass.observe(getViewLifecycleOwner(), aBoolean -> {
+            if (aBoolean) {
+                Toast.makeText(getContext(), "Exito!", Toast.LENGTH_SHORT).show();
+            } else Toast.makeText(getContext(), "Error", Toast.LENGTH_SHORT).show();
+        });
     }
 }

@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:context=".view.fragment.OrderFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/textViewTitleOrderStaff"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:gravity="center_horizontal"
+            android:text="Pedido"
+            android:textSize="30sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <view class="com.example.viejobohemiobar.view.fragment.StaffOrderFragment$MyListView"
+            android:id="@+id/listViewOrderStaff"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="20dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textViewTitleOrderStaff" />
+
+        <TextView
+            android:id="@+id/textViewTitleTotalOrderStaff"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Total:"
+            android:textSize="20sp"
+            app:layout_constraintStart_toStartOf="@id/listViewOrderStaff"
+            app:layout_constraintTop_toBottomOf="@id/listViewOrderStaff"
+            tools:layout_editor_absoluteX="26dp"
+            tools:layout_editor_absoluteY="356dp" />
+
+        <TextView
+            android:id="@+id/textViewTotalOrderStaff"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="$TextView"
+            android:textSize="20sp"
+            app:layout_constraintStart_toStartOf="@+id/textViewTitleTotalOrderStaff"
+            app:layout_constraintTop_toBottomOf="@id/textViewTitleTotalOrderStaff"
+            tools:layout_editor_absoluteX="36dp"
+            tools:layout_editor_absoluteY="382dp" />
+
+
+        <TextView
+            android:id="@+id/textViewTitleRadioOrderStaff"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="1dp"
+            android:layout_marginTop="10dp"
+            android:text="Forma de pago:"
+            app:layout_constraintStart_toStartOf="@+id/listViewOrderStaff"
+            app:layout_constraintTop_toBottomOf="@+id/textViewTotalOrderStaff" />
+
+
+        <RadioGroup
+            android:id="@+id/radioGroupOrderStaff"
+            android:layout_width="0dp"
+            android:layout_height="89dp"
+            android:layout_marginStart="35dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="1dp"
+            android:layout_marginBottom="28dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textViewTitleRadioOrderStaff">
+
+            <RadioButton
+                android:id="@+id/radioButtonEfectivoStaff"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Efectivo" />
+
+            <RadioButton
+                android:id="@+id/radioButtonOtrosStaff"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Tarjeta/Otros" />
+        </RadioGroup>
+
+        <TextView
+            android:id="@+id/textViewTitleCommentsOrderStaff"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Comentarios:"
+            app:layout_constraintStart_toStartOf="@id/textViewTitleRadioOrderStaff"
+            app:layout_constraintTop_toBottomOf="@+id/radioGroupOrderStaff" />
+
+        <TextView
+            android:id="@+id/textViewCommentsOrderStaff"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@null"
+            android:gravity="top|start"
+            android:hint="Sin comentarios"
+            android:lines="3"
+            android:padding="16dp"
+            app:layout_constraintEnd_toEndOf="@id/listViewOrderStaff"
+            app:layout_constraintStart_toStartOf="@id/textViewTitleCommentsOrderStaff"
+            app:layout_constraintTop_toBottomOf="@id/textViewTitleCommentsOrderStaff" />
+
+        <CheckBox
+            android:id="@+id/checkBoxNeedWaitStaff"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="60dp"
+            android:text="Necesito que un/a camarera/o se acerque a la mesa"
+            app:layout_constraintEnd_toEndOf="@id/listViewOrderStaff"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textViewCommentsOrderStaff" />
+
+
+
+        <Button
+            android:id="@+id/buttonToProcessOrderStaff"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:layout_marginBottom="38dp"
+            android:text="Tomar pedido"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/checkBoxNeedWaitStaff" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>
