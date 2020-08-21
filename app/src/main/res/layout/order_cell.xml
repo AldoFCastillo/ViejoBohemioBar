@@ -13,12 +13,12 @@
         android:layout_height="match_parent">
 
         <ImageView
+            android:id="@+id/deleteOrderCell"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/deleteOrderCell"
             android:src="@drawable/close"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
 
         <ImageView
@@ -32,10 +32,10 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingStart="13dp"
             android:layout_marginTop="20dp"
-            app:layout_constraintStart_toEndOf="@id/imageViewCellOrder"
+            android:paddingStart="13dp"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/imageViewCellOrder"
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
@@ -50,11 +50,10 @@
                 android:shadowRadius="9.0"
                 android:text="Pedido Mesa 1 (18:50hs)"
                 android:textColor="#000000"
-                android:textSize="22sp"
+                android:textSize="20sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
- />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/textViewTotalCellOrder"
@@ -69,7 +68,7 @@
                 android:shadowRadius="9.0"
                 android:text="$200"
                 android:textColor="#000000"
-                android:textSize="30sp"
+                android:textSize="25sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textViewTitleCellOrder" />
 
@@ -78,7 +77,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-light"
-                android:paddingStart="10dp"
+                android:paddingStart="8dp"
                 android:paddingEnd="10dp"
                 android:paddingBottom="10dp"
                 android:shadowColor="#CD1515"
@@ -87,7 +86,7 @@
                 android:shadowRadius="9.0"
                 android:text="Efectivo"
                 android:textColor="#000000"
-                android:textSize="30sp"
+                android:textSize="25sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/textViewTotalCellOrder"
                 app:layout_constraintTop_toBottomOf="@+id/textViewTitleCellOrder" />
@@ -103,16 +102,16 @@
             android:paddingStart="5dp"
             android:paddingEnd="10dp"
             android:paddingBottom="10dp"
-            android:text="Solicita camarero/a!!!"
-            android:textColor="#000000"
             android:shadowColor="#CD1515"
             android:shadowDx="0.0"
             android:shadowDy="0.0"
             android:shadowRadius="9.0"
+            android:text="Solicita camarero/a!!!"
+            android:textColor="#000000"
             android:textSize="20sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageViewCellOrder"/>
+            app:layout_constraintTop_toBottomOf="@+id/imageViewCellOrder" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

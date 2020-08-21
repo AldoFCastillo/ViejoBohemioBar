@@ -1,9 +1,12 @@
 package com.example.viejobohemiobar.view.fragment;
 
 import android.content.Context;
+import android.database.DataSetObserver;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -12,11 +15,15 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageView;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.viejobohemiobar.R;
 import com.example.viejobohemiobar.model.pojo.Order;
 import com.example.viejobohemiobar.model.pojo.Product;
@@ -52,7 +59,7 @@ public class StaffOrderFragment extends Fragment {
     private String table = "1";
     private ResultViewModel resultViewModel;
     private UserViewModel userViewModel;
-    private OrderFragment.listener listener;
+    private listener listener;
     private String path;
     private String button;
     private String next;
@@ -119,6 +126,8 @@ public class StaffOrderFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_staff_order, container, false);
         ButterKnife.bind(this, view);
 
+        resultViewModel = new ViewModelProvider(this).get(ResultViewModel.class);
+
         setBottomButton();
         setViews();
 
@@ -131,10 +140,10 @@ public class StaffOrderFragment extends Fragment {
         List<String> titleList = new ArrayList<>();
         List<String> stringList = new ArrayList<>();
         String countA;
+
         for (Product product : resultList) {
             titleList.add(product.getTitle());
         }
-
         for (String title : titleList) {
             countA = title + " X " + Collections.frequency(titleList, title);
             if (!stringList.contains(countA)) {
@@ -142,10 +151,11 @@ public class StaffOrderFragment extends Fragment {
             }
         }
 
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, stringList);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(Objects.requireNonNull(getContext()), android.R.layout.simple_list_item_1, stringList);
         listViewOrderStaff.setAdapter(adapter);
 
+        String titleOrder = "Pedido mesa " + order.getTable() + " (" + order.getTime() + "hs)";
+        textViewTitleOrderStaff.setText(titleOrder);
 
         textViewTotalOrderStaff.setText(order.getTotal());
 
@@ -166,6 +176,7 @@ public class StaffOrderFragment extends Fragment {
         checkBoxNeedWaitStaff.setEnabled(false);
 
         buttonToProcessOrderStaff.setText(button);
+        buttonToProcessOrderStaff.setOnClickListener(v -> deleteOrder(path));
     }
 
     private void setBottomButton() {
@@ -182,6 +193,33 @@ public class StaffOrderFragment extends Fragment {
                 buttonToProcessOrderStaff.setVisibility(View.INVISIBLE);
                 break;
         }
+    }
+
+    private void deleteOrder(String path){
+        resultViewModel.deleteOrder(path, order.getId());
+        deleteOrderObserver();
+    }
+
+    private void deleteOrderObserver(){
+        resultViewModel.deleteOrderBool.observe(getViewLifecycleOwner(), aBoolean -> {
+            updateOrderLog(order, next);
+        });
+    }
+
+    private void updateOrderLog(Order order, String nextPath) {
+        resultViewModel.updateOrderLog(order, nextPath, order.getId());
+        updateOrderLogObserver();
+
+    }
+
+    private void updateOrderLogObserver() {
+        resultViewModel.orderLogBool.observe(getViewLifecycleOwner(), aBoolean -> {
+            if (aBoolean) {
+                Toast.makeText(getContext(), "Pedido Migrado", Toast.LENGTH_SHORT).show();
+                listener.orderFragmentListener();
+
+            } else Toast.makeText(getContext(), "Ocurrio un error", Toast.LENGTH_SHORT).show();
+        });
     }
 
     public static class MyListView extends ListView {
@@ -205,6 +243,17 @@ public class StaffOrderFragment extends Fragment {
             super.onMeasure(widthMeasureSpec, expandSpec);
         }
 
+
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        listener = (listener) context;
+    }
+
+    public interface listener {
+        void orderFragmentListener();
     }
 
 }

@@ -16,7 +16,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
             android:gravity="center_horizontal"
-            android:text="Pedido"
+            android:text=""
             android:textSize="30sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -38,7 +38,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="Total:"
+            android:text="@string/total"
             android:textSize="20sp"
             app:layout_constraintStart_toStartOf="@id/listViewOrderStaff"
             app:layout_constraintTop_toBottomOf="@id/listViewOrderStaff"
@@ -49,7 +49,7 @@
             android:id="@+id/textViewTotalOrderStaff"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="$TextView"
+            android:text="@string/textview"
             android:textSize="20sp"
             app:layout_constraintStart_toStartOf="@+id/textViewTitleTotalOrderStaff"
             app:layout_constraintTop_toBottomOf="@id/textViewTitleTotalOrderStaff"
@@ -63,7 +63,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="1dp"
             android:layout_marginTop="10dp"
-            android:text="Forma de pago:"
+            android:text="@string/forma_de_pago"
             app:layout_constraintStart_toStartOf="@+id/listViewOrderStaff"
             app:layout_constraintTop_toBottomOf="@+id/textViewTotalOrderStaff" />
 
@@ -83,13 +83,13 @@
                 android:id="@+id/radioButtonEfectivoStaff"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Efectivo" />
+                android:text="@string/efectivo" />
 
             <RadioButton
                 android:id="@+id/radioButtonOtrosStaff"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Tarjeta/Otros" />
+                android:text="@string/tarjeta_otros" />
         </RadioGroup>
 
         <TextView
@@ -97,7 +97,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="Comentarios:"
+            android:text="@string/comentarios"
             app:layout_constraintStart_toStartOf="@id/textViewTitleRadioOrderStaff"
             app:layout_constraintTop_toBottomOf="@+id/radioGroupOrderStaff" />
 
@@ -106,11 +106,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:background="@null"
             android:gravity="top|start"
-            android:hint="Sin comentarios"
+            android:hint="@string/sin_comentarios"
             android:lines="3"
-            android:padding="16dp"
             app:layout_constraintEnd_toEndOf="@id/listViewOrderStaff"
             app:layout_constraintStart_toStartOf="@id/textViewTitleCommentsOrderStaff"
             app:layout_constraintTop_toBottomOf="@id/textViewTitleCommentsOrderStaff" />
@@ -119,13 +117,11 @@
             android:id="@+id/checkBoxNeedWaitStaff"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="60dp"
-            android:text="Necesito que un/a camarera/o se acerque a la mesa"
+            android:layout_marginTop="30dp"
+            android:text="@string/necesito_que_un_a_camarera_o_se_acerque_a_la_mesa"
             app:layout_constraintEnd_toEndOf="@id/listViewOrderStaff"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/textViewCommentsOrderStaff" />
-
-
 
         <Button
             android:id="@+id/buttonToProcessOrderStaff"
@@ -133,7 +129,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
             android:layout_marginBottom="38dp"
-            android:text="Tomar pedido"
+            android:text="@string/tomar_pedido"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

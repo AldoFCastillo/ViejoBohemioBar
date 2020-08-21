@@ -109,12 +109,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
     }
 
     private void dBListenerObserver(){
-        AtomicBoolean isFirstListener = new AtomicBoolean(true);
         resultViewModel.dbListener.observe(this, aBoolean -> {
-            if (isFirstListener.get()) {
-                isFirstListener.set(false);
-                return;
-            }
             if (aBoolean != null) {
                 if (aBoolean) {
                     Toast.makeText(MainActivity.this, "NUEVO PEDIDO", Toast.LENGTH_SHORT).show();

@@ -13,4 +13,13 @@
     <string name="enter_mail">Ingresa un mail valido y crea una contraseña para registrarte</string>
     <string name="login">Login</string>
     <string name="enter_mail_pass">Si sos parte del staff ingresa tu mail y contraseña</string>
+    <string name="necesito_que_un_a_camarera_o_se_acerque_a_la_mesa">Necesito que un/a camarera/o se acerque a la mesa</string>
+    <string name="sin_comentarios">Sin comentarios</string>
+    <string name="tomar_pedido">Tomar pedido</string>
+    <string name="comentarios">Comentarios:</string>
+    <string name="efectivo">Efectivo</string>
+    <string name="tarjeta_otros">Tarjeta/Otros</string>
+    <string name="forma_de_pago">Forma de pago:</string>
+    <string name="textview">$TextView</string>
+    <string name="total">Total:</string>
 </resources>

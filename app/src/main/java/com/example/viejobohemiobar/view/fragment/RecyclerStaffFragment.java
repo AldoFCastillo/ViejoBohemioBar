@@ -91,8 +91,8 @@ public class RecyclerStaffFragment extends Fragment implements OrderAdapter.list
     private void getOrderLogObserver(Boolean delete) {
         resultViewModel.orderLogData.observe(getViewLifecycleOwner(), orderLog -> {
             if (!delete) {
-                if (orderLog != null) {
-                    if (orderLog.getOrderList().isEmpty()) {
+                if (orderLog != null && orderLog.getOrderList()!=null) {
+                    if (orderLog.getOrderList().isEmpty() ) {
                         textViewEmptyList.setVisibility(View.VISIBLE);
                     } else setAdapterRecycler(orderLog.getOrderList());
                 } else textViewEmptyList.setVisibility(View.VISIBLE);

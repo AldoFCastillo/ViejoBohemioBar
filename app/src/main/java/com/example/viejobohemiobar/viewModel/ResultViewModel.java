@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.viejobohemiobar.dataSource.ResultDataSource;
+import com.example.viejobohemiobar.model.pojo.Order;
 import com.example.viejobohemiobar.model.pojo.OrderLog;
 import com.example.viejobohemiobar.model.pojo.Result;
 
@@ -20,6 +21,7 @@ public class ResultViewModel extends ViewModel {
     public MutableLiveData<Result> resultActualData = new MutableLiveData<>();
     public MutableLiveData<Boolean> updateActualOrderBool = new MutableLiveData<>();
     public MutableLiveData<Boolean> deleteActualOrderBool = new MutableLiveData<>();
+    public MutableLiveData<Boolean> deleteOrderBool = new MutableLiveData<>();
 
 
     public ResultViewModel() {
@@ -40,8 +42,19 @@ public class ResultViewModel extends ViewModel {
 
     public void updateOrderLog(OrderLog orderLog, String path) {
 
-        orderLogBool = resultDataSource.refreshUpdateOrderLog(orderLog, path);
+      //  orderLogBool = resultDataSource.refreshUpdateOrderLog(orderLog, path);
     }
+
+
+    public void updateOrderLog(Order order, String path, String id) {
+
+        orderLogBool = resultDataSource.refreshUpdateOrderLog(order, path, id);
+    }
+
+    public void deleteOrder(String path, String id){
+        deleteOrderBool = resultDataSource.refreshDeleteOrder(path, id);
+    }
+
 
     public void getActualOrder(String table) {
 

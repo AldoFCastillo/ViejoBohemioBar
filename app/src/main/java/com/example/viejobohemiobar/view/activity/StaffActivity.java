@@ -23,7 +23,7 @@ import com.google.android.material.snackbar.Snackbar;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class StaffActivity extends AppCompatActivity implements StaffOrdersFragment.listener, OrderFragment.listener, RecyclerStaffFragment.listener {
+public class StaffActivity extends AppCompatActivity implements StaffOrdersFragment.listener, StaffOrderFragment.listener, RecyclerStaffFragment.listener {
 
 
     private FragmentManager fragmentManager;
@@ -84,6 +84,7 @@ public class StaffActivity extends AppCompatActivity implements StaffOrdersFragm
             setFragment(new StaffOrdersFragment());
         }else super.onBackPressed();
     }
+
 
     @Override
     public void orderFragmentListener() {

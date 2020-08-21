@@ -140,7 +140,6 @@ public class MenuActivity extends AppCompatActivity implements RecyclerMenuFragm
     @Override
     public void orderFragmentListener() {
         onBackPressed();
-       /* Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);*/
+        onBackPressed();
     }
 }
