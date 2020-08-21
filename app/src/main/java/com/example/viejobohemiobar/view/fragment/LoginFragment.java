@@ -3,6 +3,7 @@ package com.example.viejobohemiobar.view.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -90,12 +91,12 @@ public class LoginFragment extends Fragment {
 
     private void setButtons(Boolean newMember) {
 
-        if (!newMember){
+        if (!newMember) {
             buttonIngresarFragmentLogin.setText(R.string.registrar);
             textViewTitleLogin.setText(R.string.enter_mail);
             buttonIngresarFragmentLogin.setOnClickListener(v -> registerUSer());
 
-        }else {
+        } else {
             buttonIngresarFragmentLogin.setText(R.string.login);
             textViewTitleLogin.setText(R.string.enter_mail_pass);
             buttonIngresarFragmentLogin.setOnClickListener(v -> loginUser());
@@ -107,11 +108,15 @@ public class LoginFragment extends Fragment {
     private void loginUser() {
         String mail = editTextEmailFragmentLogin.getText().toString();
         String pass = editTextPasswordFragmentLogin.getText().toString();
-        userViewModel.loginUser(mail, pass);
-        loginUserObserver();
+        if (TextUtils.isEmpty(mail) || TextUtils.isEmpty(pass))
+            Toast.makeText(getContext(), "Ambos campos deben estar completos!", Toast.LENGTH_SHORT).show();
+        else {
+            userViewModel.loginUser(mail, pass);
+            loginUserObserver();
+        }
     }
 
-    private void loginUserObserver(){
+    private void loginUserObserver() {
         userViewModel.liveLoginBool.observe(getViewLifecycleOwner(), aBoolean -> {
             if (aBoolean) {
                 Toast.makeText(getContext(), "Exito!", Toast.LENGTH_SHORT).show();
@@ -120,16 +125,16 @@ public class LoginFragment extends Fragment {
         });
     }
 
-    private void registerUSer(){
+    private void registerUSer() {
         String mail = editTextEmailFragmentLogin.getText().toString();
         String pass = editTextPasswordFragmentLogin.getText().toString();
         userViewModel.registerUser(mail, pass);
         registerUserObserver();
     }
 
-    private void registerUserObserver(){
+    private void registerUserObserver() {
         userViewModel.firebaseUserMutable.observe(getViewLifecycleOwner(), firebaseUser -> {
-            if (firebaseUser!=null) {
+            if (firebaseUser != null) {
                 Toast.makeText(getContext(), "Exito!", Toast.LENGTH_SHORT).show();
                 loginListener.loginFragmentListener();
             } else Toast.makeText(getContext(), "Fallo el registro", Toast.LENGTH_SHORT).show();

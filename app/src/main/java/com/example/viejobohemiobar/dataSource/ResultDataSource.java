@@ -2,8 +2,7 @@ package com.example.viejobohemiobar.dataSource;
 
 import android.util.Log;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.viejobohemiobar.model.pojo.Order;
@@ -11,14 +10,10 @@ import com.example.viejobohemiobar.model.pojo.OrderLog;
 import com.example.viejobohemiobar.service.RetrofitInstance;
 import com.example.viejobohemiobar.model.pojo.Result;
 import com.example.viejobohemiobar.utils.MenuUtils;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,9 +29,6 @@ public class ResultDataSource {
     public static final String PATH = "34BGgFCk";
 
     private String actual = "actual orders";
-    private String pending = "pending orders";
-    private String process = "in process orders";
-    private String closed = "closed orders";
     private MutableLiveData<Result> liveResult;
     private MutableLiveData<Boolean> boolListenPending;
     private MutableLiveData<OrderLog> liveOrderLog;
@@ -57,13 +49,10 @@ public class ResultDataSource {
                 .enqueue(new Callback<Result>() {
                     @Override
                     public void onResponse(Call<Result> call, Response<Result> response) {
-
                         if (response.body() != null) {
                             liveResult.setValue(response.body());
                         }
-
                     }
-
                     @Override
                     public void onFailure(Call<Result> call, Throwable t) {
                         String message = t.getMessage();
@@ -71,8 +60,6 @@ public class ResultDataSource {
                         t.printStackTrace();
                     }
                 });
-
-
     }
 
     public MutableLiveData<Result> refreshGetProducts() {
@@ -183,6 +170,7 @@ public class ResultDataSource {
         AtomicBoolean isFirstListener = new AtomicBoolean(true);
         boolListenPending = new MutableLiveData<>();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
+        String pending = "pending orders";
         db.collection(pending).addSnapshotListener((value, e) -> {
             if (isFirstListener.get()) {
                 isFirstListener.set(false);

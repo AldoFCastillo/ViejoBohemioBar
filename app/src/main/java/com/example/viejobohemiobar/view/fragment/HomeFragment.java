@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -22,33 +23,20 @@ import butterknife.ButterKnife;
 
 public class HomeFragment extends Fragment {
 
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
 
-    private String mParam1 = "Hello";
     private listener listener;
 
     @BindView(R.id.buttonScan)
-    Button buttonScan;
+    ImageView buttonScan;
     @BindView(R.id.textViewHome)
     TextView textViewHome;
 
-
     //TODO BORRAR
-
     @BindView(R.id.buttonSkip)
     Button getButtonSkip;
 
     public HomeFragment() {
         // Required empty public constructor
-    }
-
-    public static HomeFragment newInstance(String param1) {
-        HomeFragment fragment = new HomeFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        fragment.setArguments(args);
-        return fragment;
     }
 
     @Override
@@ -57,13 +45,6 @@ public class HomeFragment extends Fragment {
         listener = (listener) context;
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-        }
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -73,22 +54,10 @@ public class HomeFragment extends Fragment {
         ButterKnife.bind(this, view);
 
 
-        textViewHome.setText(mParam1);
-
         //TODO BORRAR
-        getButtonSkip.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                listener.homeListener(false);
-            }
-        });
+        getButtonSkip.setOnClickListener(v -> listener.homeListener(false));
 
-        buttonScan.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                listener.homeListener(true);
-            }
-        });
+        buttonScan.setOnClickListener(v -> listener.homeListener(true));
 
         return view;
     }

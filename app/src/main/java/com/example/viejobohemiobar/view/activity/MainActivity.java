@@ -20,6 +20,7 @@ import androidx.lifecycle.ViewModelProviders;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -46,6 +47,7 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
 
+import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import butterknife.BindView;
@@ -78,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-         resultViewModel = new ViewModelProvider(this).get(ResultViewModel.class);
+        resultViewModel = new ViewModelProvider(this).get(ResultViewModel.class);
 
         createNotificationChannel();
         setFragment(new HomeFragment());
@@ -88,29 +90,28 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
     }
 
 
-        private void createNotificationChannel() {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                CharSequence name = getString(R.string.channel_name);
-                String description = getString(R.string.channel_description);
-                int importance = NotificationManager.IMPORTANCE_DEFAULT;
-                NotificationChannel channel = new NotificationChannel("CHANNEL_ID", name, importance);
-                channel.setDescription(description);
-                NotificationManager notificationManager = getSystemService(NotificationManager.class);
-                notificationManager.createNotificationChannel(channel);
-            }
-        }
-
-
-    private void setDBListener() {
-        if (checkUSer()) {
-            resultViewModel.listenPending();
-            dBListenerObserver();
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.channel_name);
+            String description = getString(R.string.channel_description);
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel("CHANNEL_ID", name, importance);
+            channel.setDescription(description);
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
         }
     }
 
-    private void dBListenerObserver(){
+
+    private void setDBListener() {
+        resultViewModel.listenPending();
+        dBListenerObserver();
+
+    }
+
+    private void dBListenerObserver() {
         resultViewModel.dbListener.observe(this, aBoolean -> {
-            if (aBoolean != null) {
+            if (aBoolean != null && !checkUSer()) {
                 if (aBoolean) {
                     Toast.makeText(MainActivity.this, "NUEVO PEDIDO", Toast.LENGTH_SHORT).show();
                     sendNotification();
@@ -127,7 +128,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-        double idDouble =  Math.random();
+        double idDouble = Math.random();
         int id = (int) idDouble;
         notificationManager.notify(id, builder.build());
     }
@@ -150,60 +151,54 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
     private Boolean checkUSer() {
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        return (currentUser != null);
+        return (currentUser == null);
     }
 
 
     private void setNavigationView() {
+        navigationView.getMenu().clear();
+        navigationView.inflateMenu(R.menu.home_menu);
         menuLogin = navigationView.getMenu().findItem(R.id.navigationViewLoginItem);
         buttonLogin = navigationView.getMenu().findItem(R.id.login);
-        if (!checkUSer()) {
+        if (checkUSer()) {
             menuLogin.setVisible(false);
             buttonLogin.setVisible(true);
         } else {
             menuLogin.setVisible(true);
             buttonLogin.setVisible(false);
         }
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.login:
-                        setFragment(new LoginFragment());
-                        Snackbar.make(mainLayout, "Login", Snackbar.LENGTH_LONG).show();
-                        break;
+        navigationView.setNavigationItemSelectedListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.login:
+                    setFragment(new LoginFragment());
+                    Snackbar.make(mainLayout, "Login", Snackbar.LENGTH_LONG).show();
+                    break;
 
-                    case R.id.navigationViewOrdersBacklog:
-                        goStaffActivity();
-                        break;
+                case R.id.navigationViewOrdersBacklog:
+                    goStaffActivity();
+                    break;
 
-                    case R.id.registerMenuNavigation:
-                        setFragment(new LoginFragment());
-                        Snackbar.make(mainLayout, "Registro", Snackbar.LENGTH_LONG).show();
-                        break;
+                case R.id.registerMenuNavigation:
+                    setFragment(new LoginFragment());
+                    Snackbar.make(mainLayout, "Registro", Snackbar.LENGTH_LONG).show();
+                    break;
 
-                    case R.id.changePassMenuNavigation:
-                        setFragment(new PasswordFragment());
-                        Snackbar.make(mainLayout, "Cambiar clave", Snackbar.LENGTH_LONG).show();
-                        break;
+                case R.id.changePassMenuNavigation:
+                    setFragment(new PasswordFragment());
+                    Snackbar.make(mainLayout, "Cambiar clave", Snackbar.LENGTH_LONG).show();
+                    break;
 
-
-                    case R.id.navigationViewCerrarSesionItem:
-                        FirebaseAuth.getInstance().signOut();
-                        menuLogin.setVisible(false);
-                        buttonLogin.setVisible(true);
-                        drawerLayout.closeDrawers();
-                        Toast.makeText(MainActivity.this, "Desconexion exitosa", Toast.LENGTH_SHORT).show();
-                        break;
-
-
-                }
-
-                drawerLayout.closeDrawers();
-
-                return false;
+                case R.id.navigationViewCerrarSesionItem:
+                    FirebaseAuth.getInstance().signOut();
+                    setNavigationView();
+                    Toast.makeText(MainActivity.this, "Desconexion exitosa", Toast.LENGTH_SHORT).show();
+                    break;
             }
+            drawerLayout.closeDrawers();
+
+            return true;
         });
+
 
     }
 
@@ -270,7 +265,8 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
 
     @Override
     public void loginFragmentListener() {
-        goStaffActivity();
+        setFragment(new HomeFragment());
+        setNavigationView();
     }
 
 
