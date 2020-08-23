@@ -75,7 +75,7 @@ public class MenuFragment extends Fragment {
 
     public static class ViewPagerAdapterTabs extends FragmentStatePagerAdapter {
 
-        String[] titlePages = {"Hamburguesas","Extras","Bebidas"};
+        String[] titlePages = {"Burgers","Extras","Bebidas"};
 
 
         public ViewPagerAdapterTabs(@NonNull FragmentManager fm) {

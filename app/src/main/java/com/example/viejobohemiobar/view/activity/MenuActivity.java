@@ -9,6 +9,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -29,6 +30,8 @@ import com.example.viejobohemiobar.model.pojo.Result;
 import com.example.viejobohemiobar.view.fragment.RecyclerMenuFragment;
 import com.example.viejobohemiobar.view.fragment.StaffOrdersFragment;
 import com.example.viejobohemiobar.viewModel.ResultViewModel;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 
 
 import butterknife.BindView;
@@ -48,6 +51,8 @@ public class MenuActivity extends AppCompatActivity implements RecyclerMenuFragm
 
     @BindView(R.id.toolbarDetails)
     Toolbar toolbar;
+    @BindView(R.id.constraintMenuActivity)
+    ConstraintLayout constraintMenuActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,7 +94,6 @@ public class MenuActivity extends AppCompatActivity implements RecyclerMenuFragm
 
     private void setToolBar() {
         setSupportActionBar(toolbar);
-
     }
 
     @Override
@@ -109,7 +113,7 @@ public class MenuActivity extends AppCompatActivity implements RecyclerMenuFragm
             if (result != null) {
                 OrderFragment orderFragment = OrderFragment.newInstance(result, table);
                 setFragment(orderFragment);
-                Toast.makeText(MenuActivity.this, "Tu pedido", Toast.LENGTH_SHORT).show();
+                Snackbar.make(constraintMenuActivity, "Tu pedido",Snackbar.LENGTH_SHORT ).show();
             } else
                 Toast.makeText(MenuActivity.this, "Aun no has agregado ningun producto", Toast.LENGTH_SHORT).show();
 

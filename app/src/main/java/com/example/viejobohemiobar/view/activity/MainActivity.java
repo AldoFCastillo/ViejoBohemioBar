@@ -267,11 +267,8 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
     }
 
 
-    //TODO fragments de confirmacion. SU PEDIDO HA SIDO CONFIRMADO, PRONTO SERA LLEVADO A SU MESA(SI DESEA HACER UN NUEVO PEDIDO VUELVA A CAPTURAR EL CODIGO QR DE SU MESA)
     //TODO progressbar
-    //TODO logos, fuentes, styles, notif
-    //TODO json
-
+    //TODO logos
 
     @Override
     public void loginFragmentListener() {

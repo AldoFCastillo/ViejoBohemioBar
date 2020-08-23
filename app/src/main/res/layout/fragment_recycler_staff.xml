@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/constraintStaff"
-    android:background="#D3D0D0"
+    android:background="#E3E0E0"
     tools:context=".view.fragment.RecyclerStaffFragment">
 
     <androidx.recyclerview.widget.RecyclerView
@@ -13,7 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:background="#D3D0D0"
+        android:background="#E3E0E0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

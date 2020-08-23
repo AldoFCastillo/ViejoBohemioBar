@@ -3,34 +3,37 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
+    android:background="#F6B694"
     android:orientation="vertical"
-    android:backgroundTint="#D6CECE"
     tools:context=".view.fragment.MenuFragment">
 
-    <TextView
-        android:id="@+id/textViewTitleMenu"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="@string/menu"
-        android:textSize="30sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.07" />
+        <TextView
+            android:id="@+id/textViewTitleMenu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:fontFamily="@font/viejo_bohemio"
+            android:gravity="center"
+            android:text="@string/menu"
+            android:textSize="45sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#FFF"
-        android:id="@+id/appBarMenu"/>
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/appBarMenu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:background="#F1A57C" />
 
-    <androidx.viewpager.widget.ViewPager
-        android:id="@+id/viewPagerMenuTabs"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="30dp" />
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/viewPagerMenuTabs"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="30dp" />
+
 
 </LinearLayout>

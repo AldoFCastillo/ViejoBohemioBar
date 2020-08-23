@@ -6,16 +6,18 @@
     android:layout_height="match_parent"
     android:id="@+id/constraintStaff"
     android:orientation="vertical"
+    android:background="#E3E0E0"
     tools:context=".view.fragment.StaffOrdersFragment">
 
     <TextView
         android:id="@+id/textViewTitleStaff"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="30dp"
         android:gravity="center"
-        android:text="PEDIDOS"
-        android:textSize="30sp"
+        android:text="@string/pedidos"
+        android:fontFamily="sans-serif-black"
+        android:textSize="40sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -24,6 +26,7 @@
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
         android:background="#FFF"
         android:id="@+id/appBarStaff"/>
 

@@ -1,6 +1,7 @@
 package com.example.viejobohemiobar.view.fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -25,6 +26,9 @@ import com.example.viejobohemiobar.model.pojo.Product;
 import com.example.viejobohemiobar.model.pojo.Result;
 import com.example.viejobohemiobar.utils.ConfigRecyclerView;
 import com.example.viejobohemiobar.utils.MenuUtils;
+import com.example.viejobohemiobar.view.activity.MainActivity;
+import com.example.viejobohemiobar.view.activity.MenuActivity;
+import com.example.viejobohemiobar.view.activity.SplashActivity;
 import com.example.viejobohemiobar.view.adapter.ProductAdapter;
 import com.example.viejobohemiobar.viewModel.ResultViewModel;
 import com.example.viejobohemiobar.viewModel.UserViewModel;
@@ -162,9 +166,7 @@ public class OrderFragment extends Fragment implements ProductAdapter.adapterLis
     private void updateOrderLogObserver() {
         resultViewModel.orderLogBool.observe(getViewLifecycleOwner(), aBoolean -> {
             if (aBoolean) {
-                Toast.makeText(getContext(), "Pedido Confirmado", Toast.LENGTH_SHORT).show();
-                listener.orderFragmentListener();
-
+                goToSplash();
             } else Toast.makeText(getContext(), "Ocurrio un error", Toast.LENGTH_SHORT).show();
         });
     }
@@ -179,6 +181,12 @@ public class OrderFragment extends Fragment implements ProductAdapter.adapterLis
     @Override
     public void selection(Integer adapterPosition, Result result) {
 
+    }
+
+    private void goToSplash(){
+        Intent intent = new Intent(getActivity(), SplashActivity.class);
+        intent.putExtras(new Bundle());
+        startActivity(intent);
     }
 
     public interface listener {
