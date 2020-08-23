@@ -40,9 +40,11 @@ import butterknife.ButterKnife;
 public class OrderFragment extends Fragment implements ProductAdapter.adapterListener {
 
     public static final String ARG_SERIAL = "serial";
+    private static final String ARG_TABLE = "table";
+
 
     private Result result;
-    private String table = "1";
+    private String table;
     private ResultViewModel resultViewModel;
     private UserViewModel userViewModel;
     private listener listener;
@@ -72,10 +74,11 @@ public class OrderFragment extends Fragment implements ProductAdapter.adapterLis
         // Required empty public constructor
     }
 
-    public static OrderFragment newInstance(Serializable result) {
+    public static OrderFragment newInstance(Serializable result, String table) {
         OrderFragment fragment = new OrderFragment();
         Bundle args = new Bundle();
         args.putSerializable(ARG_SERIAL, result);
+        args.putString(ARG_TABLE, table);
         fragment.setArguments(args);
         return fragment;
     }
@@ -86,6 +89,7 @@ public class OrderFragment extends Fragment implements ProductAdapter.adapterLis
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             this.result = (Result) getArguments().getSerializable(ARG_SERIAL);
+            this.table = getArguments().getString(ARG_TABLE);
         }
 
     }

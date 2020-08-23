@@ -38,6 +38,7 @@ public class MenuActivity extends AppCompatActivity implements RecyclerMenuFragm
 
     public static final String ARG_TABLE = "table";
 
+    public static Result result;
 
     private String table;
     private ResultViewModel resultViewModel;
@@ -58,15 +59,25 @@ public class MenuActivity extends AppCompatActivity implements RecyclerMenuFragm
         resultViewModel = new ViewModelProvider(this).get(ResultViewModel.class);
 
         Bundle bundle = getIntent().getExtras();
+        assert bundle != null;
         table = bundle.getString(ARG_TABLE);
 
-
         setToolBar();
+        getMenu();
 
-        setFragment(new MenuFragment());
-        Toast.makeText(MenuActivity.this, "Ya podes armar tu pedido", Toast.LENGTH_SHORT).show();
+    }
 
+    private void getMenu(){
+        resultViewModel.getResults();
+        getResultsObserver();
+    }
 
+    private void getResultsObserver(){
+        resultViewModel.resultData.observe(this, result -> {
+            MenuActivity.result = result;
+            setFragment(new MenuFragment());
+            Toast.makeText(MenuActivity.this, "Ya podes armar tu pedido", Toast.LENGTH_SHORT).show();
+        });
     }
 
     public void setFragment(Fragment fragment) {
@@ -96,7 +107,7 @@ public class MenuActivity extends AppCompatActivity implements RecyclerMenuFragm
     private void getActualOrderObserver() {
         resultViewModel.resultActualData.observe(this, result -> {
             if (result != null) {
-                OrderFragment orderFragment = OrderFragment.newInstance(result);
+                OrderFragment orderFragment = OrderFragment.newInstance(result, table);
                 setFragment(orderFragment);
                 Toast.makeText(MenuActivity.this, "Tu pedido", Toast.LENGTH_SHORT).show();
             } else

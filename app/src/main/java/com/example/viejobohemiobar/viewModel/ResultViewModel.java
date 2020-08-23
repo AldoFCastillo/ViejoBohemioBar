@@ -40,12 +40,6 @@ public class ResultViewModel extends ViewModel {
     }
 
 
-    public void updateOrderLog(OrderLog orderLog, String path) {
-
-      //  orderLogBool = resultDataSource.refreshUpdateOrderLog(orderLog, path);
-    }
-
-
     public void updateOrderLog(Order order, String path, String id) {
 
         orderLogBool = resultDataSource.refreshUpdateOrderLog(order, path, id);

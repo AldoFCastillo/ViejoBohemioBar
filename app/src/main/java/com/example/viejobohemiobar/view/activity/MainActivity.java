@@ -19,6 +19,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Build;
@@ -29,11 +30,13 @@ import android.widget.Toast;
 
 import com.example.viejobohemiobar.R;
 import com.example.viejobohemiobar.model.pojo.OrderLog;
+import com.example.viejobohemiobar.utils.MenuUtils;
 import com.example.viejobohemiobar.view.fragment.HomeFragment;
 import com.example.viejobohemiobar.view.fragment.LoginFragment;
 import com.example.viejobohemiobar.view.fragment.PasswordFragment;
 import com.example.viejobohemiobar.view.fragment.ScannerFragment;
 import com.example.viejobohemiobar.viewModel.ResultViewModel;
+import com.facebook.stetho.Stetho;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
@@ -59,9 +62,8 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
 
     private long backPressedTime;
     private Toast backToast;
-    private MenuItem menuLogin;
-    private MenuItem buttonLogin;
     private ResultViewModel resultViewModel;
+    private String table;
 
 
     @BindView(R.id.toolbarMain)
@@ -78,11 +80,12 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Stetho.initializeWithDefaults(this);
         ButterKnife.bind(this);
 
         resultViewModel = new ViewModelProvider(this).get(ResultViewModel.class);
+        MenuUtils.createNotificationChannel(getSystemService(NotificationManager.class));
 
-        createNotificationChannel();
         setFragment(new HomeFragment());
         setToolBar();
         setNavigationView();
@@ -90,48 +93,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
     }
 
 
-    private void createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = getString(R.string.channel_name);
-            String description = getString(R.string.channel_description);
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel("CHANNEL_ID", name, importance);
-            channel.setDescription(description);
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
-    }
 
-
-    private void setDBListener() {
-        resultViewModel.listenPending();
-        dBListenerObserver();
-
-    }
-
-    private void dBListenerObserver() {
-        resultViewModel.dbListener.observe(this, aBoolean -> {
-            if (aBoolean != null && !checkUSer()) {
-                if (aBoolean) {
-                    Toast.makeText(MainActivity.this, "NUEVO PEDIDO", Toast.LENGTH_SHORT).show();
-                    sendNotification();
-                }
-            }
-        });
-    }
-
-    private void sendNotification() {
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "CHANNEL_ID")
-                .setSmallIcon(R.drawable.ic_home_black_24dp)
-                .setContentTitle("PEDIDO NUEVO!")
-                .setContentText("Han confirmado un nuevo pedido")
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
-
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-        double idDouble = Math.random();
-        int id = (int) idDouble;
-        notificationManager.notify(id, builder.build());
-    }
 
     public void setFragment(Fragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -158,8 +120,8 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
     private void setNavigationView() {
         navigationView.getMenu().clear();
         navigationView.inflateMenu(R.menu.home_menu);
-        menuLogin = navigationView.getMenu().findItem(R.id.navigationViewLoginItem);
-        buttonLogin = navigationView.getMenu().findItem(R.id.login);
+        MenuItem menuLogin = navigationView.getMenu().findItem(R.id.navigationViewLoginItem);
+        MenuItem buttonLogin = navigationView.getMenu().findItem(R.id.login);
         if (checkUSer()) {
             menuLogin.setVisible(false);
             buttonLogin.setVisible(true);
@@ -202,6 +164,40 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
 
     }
 
+    private void setDBListener() {
+        resultViewModel.listenPending();
+        dBListenerObserver();
+
+    }
+
+    private void dBListenerObserver() {
+        resultViewModel.dbListener.observe(this, aBoolean -> {
+            if (aBoolean != null && !checkUSer()) {
+                if (aBoolean) {
+                    Toast.makeText(MainActivity.this, "NUEVO PEDIDO", Toast.LENGTH_SHORT).show();
+                    sendNotification();
+                }
+            }
+        });
+    }
+
+    private void sendNotification() {
+        double idDouble = Math.random();
+        int id = (int) idDouble;
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "CHANNEL_ID")
+                .setSmallIcon(R.drawable.ic_hamburguer)
+                .setContentTitle("PEDIDO NUEVO!")
+                .setContentText("Han confirmado un nuevo pedido")
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
+                new Intent(this, StaffActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
+        builder.setContentIntent(contentIntent);
+
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+        notificationManager.notify(id, builder.build());
+    }
+
     private void goStaffActivity() {
         Intent intent = new Intent(this, StaffActivity.class);
         startActivity(intent);
@@ -238,13 +234,25 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        String table = "1";
-        /*IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-
+        //iScanner@#001#001  - BohemioScanner@#1
+        //  String table = "1";
+        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        setFragment(new HomeFragment());
         if ((result != null) && (result.getContents() != null)) {
-            table = result.getContents();
-        } else Toast.makeText(this, "Ocurrio un error", Toast.LENGTH_SHORT).show();*/
-        goMenuActivity(table);
+            validateQRCode(result.getContents());
+        } else Toast.makeText(this, "Ocurrio un error", Toast.LENGTH_SHORT).show();
+
+
+    }
+
+    private void validateQRCode(String qrcode) {
+        if (qrcode.startsWith("BohemioScanner@")) {
+            qrcode = qrcode.substring(14);
+            String[] ids = qrcode.split("#");
+            table = ids[1];
+            goMenuActivity(table);
+        } else Toast.makeText(this, "Ocurrio un error", Toast.LENGTH_SHORT).show();
+
 
     }
 
@@ -261,6 +269,8 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
 
     //TODO fragments de confirmacion. SU PEDIDO HA SIDO CONFIRMADO, PRONTO SERA LLEVADO A SU MESA(SI DESEA HACER UN NUEVO PEDIDO VUELVA A CAPTURAR EL CODIGO QR DE SU MESA)
     //TODO progressbar
+    //TODO logos, fuentes, styles, notif
+    //TODO json
 
 
     @Override

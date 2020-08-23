@@ -1,5 +1,10 @@
 package com.example.viejobohemiobar.utils;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.os.Build;
+
+import com.example.viejobohemiobar.R;
 import com.example.viejobohemiobar.model.pojo.Product;
 import com.example.viejobohemiobar.model.pojo.Result;
 
@@ -41,6 +46,17 @@ public class MenuUtils {
                 break;
         }
         return path;
+    }
+
+    public static void createNotificationChannel(NotificationManager notificationManager) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "channel_name";
+            String description = "channel_description";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel("CHANNEL_ID", name, importance);
+            channel.setDescription(description);
+            notificationManager.createNotificationChannel(channel);
+        }
     }
 
 }

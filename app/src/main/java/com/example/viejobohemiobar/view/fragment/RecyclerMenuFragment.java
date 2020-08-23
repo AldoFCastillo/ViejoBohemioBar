@@ -5,9 +5,6 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
@@ -19,7 +16,6 @@ import com.example.viejobohemiobar.model.pojo.Product;
 import com.example.viejobohemiobar.model.pojo.Result;
 import com.example.viejobohemiobar.utils.ConfigRecyclerView;
 import com.example.viejobohemiobar.view.adapter.ProductAdapter;
-import com.example.viejobohemiobar.viewModel.ResultViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,15 +26,12 @@ import butterknife.ButterKnife;
 public class RecyclerMenuFragment extends Fragment implements ProductAdapter.adapterListener {
 
     private static final String ARG_TYPE = "type";
+    private static final String ARG_RESULT = "result";
 
 
-    private List<Product> productList;
-    private ProductAdapter productAdapter;
     private listener listener;
     private String type;
-    private ResultViewModel resultViewModel;
-
-
+    private Result result;
 
     @BindView(R.id.recyclerMenuFragment)
     RecyclerView recyclerView;
@@ -47,10 +40,11 @@ public class RecyclerMenuFragment extends Fragment implements ProductAdapter.ada
         // Required empty public constructor
     }
 
-    public static RecyclerMenuFragment newInstance(String type) {
+    public static RecyclerMenuFragment newInstance(String type, Result result) {
         RecyclerMenuFragment fragment = new RecyclerMenuFragment();
         Bundle args = new Bundle();
         args.putString(ARG_TYPE, type);
+        args.putSerializable(ARG_RESULT, result);
         fragment.setArguments(args);
         return fragment;
     }
@@ -60,6 +54,7 @@ public class RecyclerMenuFragment extends Fragment implements ProductAdapter.ada
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             type = getArguments().getString(ARG_TYPE);
+            result = (Result)getArguments().getSerializable(ARG_RESULT);
         }
     }
 
@@ -73,17 +68,13 @@ public class RecyclerMenuFragment extends Fragment implements ProductAdapter.ada
 
         recyclerView = ConfigRecyclerView.getRecyclerView(recyclerView, getContext());
 
-        resultViewModel = new ViewModelProvider(this).get(ResultViewModel.class);
-
-        resultViewModel.getResults();
-        getResultsObserver();
+        createSelectionList();
 
         return view;
     }
 
-    private void getResultsObserver(){
-        resultViewModel.resultData.observe(getViewLifecycleOwner(), result -> {
-            productList = result.getResults();
+    private void createSelectionList(){
+        List<Product> productList = result.getResults();
             List<Product> selectionList = new ArrayList<>();
 
             for (Product product: productList) {
@@ -91,9 +82,9 @@ public class RecyclerMenuFragment extends Fragment implements ProductAdapter.ada
                     selectionList.add(product);
                 }
             }
-            productAdapter = new ProductAdapter(RecyclerMenuFragment.this, selectionList);
+        ProductAdapter productAdapter = new ProductAdapter(RecyclerMenuFragment.this, selectionList);
             recyclerView.setAdapter(productAdapter);
-        });
+
     }
 
 
