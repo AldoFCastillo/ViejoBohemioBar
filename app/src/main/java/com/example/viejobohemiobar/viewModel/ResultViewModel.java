@@ -18,6 +18,8 @@ public class ResultViewModel extends ViewModel {
     public MutableLiveData<OrderLog> orderLogData = new MutableLiveData<>();
     public MutableLiveData<Boolean> orderLogBool = new MutableLiveData<>();
     public MutableLiveData<Result> resultData = new MutableLiveData<>();
+    public MutableLiveData<Boolean> loading =new MutableLiveData<>();
+    public MutableLiveData<Boolean> error =new MutableLiveData<>();
     public MutableLiveData<Result> resultActualData = new MutableLiveData<>();
     public MutableLiveData<Boolean> updateActualOrderBool = new MutableLiveData<>();
     public MutableLiveData<Boolean> deleteActualOrderBool = new MutableLiveData<>();
@@ -31,6 +33,8 @@ public class ResultViewModel extends ViewModel {
     public void getResults() {
 
         resultData = resultDataSource.refreshGetProducts();
+        loading = resultDataSource.getLoading();
+        error = resultDataSource.getError();
     }
 
 

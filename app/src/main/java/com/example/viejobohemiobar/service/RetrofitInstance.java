@@ -1,9 +1,11 @@
 package com.example.viejobohemiobar.service;
 
+import com.example.viejobohemiobar.model.pojo.Result;
 import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import io.reactivex.Single;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
@@ -37,9 +39,8 @@ public class RetrofitInstance {
         return retrofitInstance;
     }
 
-    public ApiService getApiService() {
-        return retrofit.create(ApiService.class);
-
+    public Single<Result> getApiService(String path, Integer offset){
+        return retrofit.create(ApiService.class).getResult(path, offset);
     }
 
 }

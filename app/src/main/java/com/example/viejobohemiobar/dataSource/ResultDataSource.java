@@ -19,6 +19,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.observers.DisposableSingleObserver;
+import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -29,7 +33,9 @@ public class ResultDataSource {
     public static final String PATH = "CsRYuHA5";
 
     private String actual = "actual orders";
-    private MutableLiveData<Result> liveResult;
+    public MutableLiveData<Result> liveResult;
+    public MutableLiveData<Boolean> loading;
+    public MutableLiveData<Boolean> error;
     private MutableLiveData<Boolean> boolListenPending;
     private MutableLiveData<OrderLog> liveOrderLog;
     private MutableLiveData<Boolean> liveUpOrderLogBool;
@@ -37,33 +43,51 @@ public class ResultDataSource {
     private MutableLiveData<Boolean> liveActualOrderBool;
     private MutableLiveData<Boolean> liveDeleteActualBool;
     private MutableLiveData<Boolean> liveDeleteBool;
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
 
     private void getProducts() {
 
         liveResult = new MutableLiveData<>();
-        RetrofitInstance.getInstance()
-                .getApiService()
-                .getResult(PATH, FIRST_PAGE)
-                .enqueue(new Callback<Result>() {
-                    @Override
-                    public void onResponse(Call<Result> call, Response<Result> response) {
-                        if (response.body() != null) {
-                            liveResult.setValue(response.body());
-                        }
-                    }
-                    @Override
-                    public void onFailure(Call<Result> call, Throwable t) {
-                        String message = t.getMessage();
-                        System.out.println("ERROR" + message);
-                        t.printStackTrace();
-                    }
-                });
+        loading = new MutableLiveData<>();
+        error = new MutableLiveData<>();
+        loading.setValue(true);
+
+        compositeDisposable.add(
+                RetrofitInstance.getInstance()
+                        .getApiService(PATH, FIRST_PAGE)
+                        .subscribeOn(Schedulers.newThread())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeWith(new DisposableSingleObserver<Result>() {
+                            @Override
+                            public void onSuccess(Result value) {
+                                liveResult.setValue(value);
+                                loading.setValue(false);
+                                error.setValue(false);
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                loading.setValue(false);
+                                error.setValue(true);
+                                String message = e.getMessage();
+                                assert message != null;
+                                Log.e(TAG, message);
+                            }
+                        }));
     }
 
     public MutableLiveData<Result> refreshGetProducts() {
         getProducts();
         return liveResult;
+    }
+
+    public MutableLiveData<Boolean> getLoading() {
+        return loading;
+    }
+
+    public MutableLiveData<Boolean> getError() {
+        return error;
     }
 
 
@@ -105,7 +129,7 @@ public class ResultDataSource {
         return liveUpOrderLogBool;
     }
 
-    private void deleteOrder(String path, String id){
+    private void deleteOrder(String path, String id) {
         liveDeleteBool = new MutableLiveData<>();
         path = MenuUtils.stringToPath(path);
         getDocumentReference(path, id).delete()
@@ -114,7 +138,7 @@ public class ResultDataSource {
     }
 
 
-    public MutableLiveData<Boolean> refreshDeleteOrder(String path, String id){
+    public MutableLiveData<Boolean> refreshDeleteOrder(String path, String id) {
         deleteOrder(path, id);
         return liveDeleteBool;
     }

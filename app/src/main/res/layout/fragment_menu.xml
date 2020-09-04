@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F6B694"
+    android:background="@color/colorPrimary"
     android:orientation="vertical"
     tools:context=".view.fragment.MenuFragment">
 
@@ -12,7 +12,7 @@
             android:id="@+id/textViewTitleMenu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="10dp"
             android:fontFamily="@font/viejo_bohemio"
             android:gravity="center"
             android:text="@string/menu"
@@ -26,14 +26,13 @@
             android:id="@+id/appBarMenu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:background="#F1A57C" />
+            android:layout_marginTop="10dp"
+            android:background="@color/colorAccent" />
 
         <androidx.viewpager.widget.ViewPager
             android:id="@+id/viewPagerMenuTabs"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="30dp" />
+            android:layout_height="match_parent" />
 
 
 </LinearLayout>

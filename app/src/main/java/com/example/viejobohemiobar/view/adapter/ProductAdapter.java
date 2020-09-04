@@ -1,15 +1,22 @@
 package com.example.viejobohemiobar.view.adapter;
 
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.example.viejobohemiobar.R;
 import com.example.viejobohemiobar.model.pojo.Product;
 import com.example.viejobohemiobar.model.pojo.Result;
@@ -63,6 +70,8 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         TextView textViewTitle;
         @BindView(R.id.textViewPriceCell)
         TextView textViewPrice;
+        @BindView(R.id.progressProductCell)
+        ProgressBar progressBar;
 
         public ProductViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -81,7 +90,19 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
             textViewTitle.setText(title);
             textViewPrice.setText(product.getPrice());
             String url = product.getPicture();
-            Glide.with(itemView).load(url).into(imageViewCell);
+            Glide.with(itemView).load(url).listener(new RequestListener<Drawable>() {
+                @Override
+                public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                    progressBar.setVisibility(View.GONE);
+                    return false;
+                }
+
+                @Override
+                public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                    progressBar.setVisibility(View.GONE);
+                    return false;
+                }
+            }).into(imageViewCell);
         }
     }
 

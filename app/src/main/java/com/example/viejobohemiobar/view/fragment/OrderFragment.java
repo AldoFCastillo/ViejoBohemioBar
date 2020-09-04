@@ -185,7 +185,9 @@ public class OrderFragment extends Fragment implements ProductAdapter.adapterLis
 
     private void goToSplash(){
         Intent intent = new Intent(getActivity(), SplashActivity.class);
-        intent.putExtras(new Bundle());
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(SplashActivity.KEY_BOOL, true);
+        intent.putExtras(bundle);
         startActivity(intent);
     }
 

@@ -10,25 +10,36 @@ import com.example.viejobohemiobar.R;
 
 public class SplashActivity extends AppCompatActivity {
 
-    private final int SPLASH_TIME = 4000;
+    private final int SPLASH_INTRO_TIME = 2000;
+    private final int SPLASH_CONFIRM_TIME = 5000;
+    public static final String KEY_BOOL = "bool";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getIntent().getExtras()!=null){
-            setContentView(R.layout.order_confirm);
-        } else setContentView(R.layout.activity_splash);
+        boolean bool = false;
+        if (getIntent().getExtras() != null) {
+            Bundle bundle = getIntent().getExtras();
+            bool = bundle.getBoolean(KEY_BOOL);
+        }
 
-        setHandler();
+        if (bool) {
+            setContentView(R.layout.order_confirm);
+            setHandler(SPLASH_CONFIRM_TIME);
+        } else {
+            setContentView(R.layout.activity_splash);
+            setHandler(SPLASH_INTRO_TIME);
+        }
+
 
     }
 
-    public void setHandler(){
+    public void setHandler(int time) {
         new Handler().postDelayed(() -> {
             Intent intent = new Intent(SplashActivity.this, MainActivity.class);
             startActivity(intent);
             finish();
-        }, SPLASH_TIME);
+        }, time);
     }
 }

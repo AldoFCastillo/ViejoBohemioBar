@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F6B694"
+    android:background="@drawable/fondo"
     tools:context=".view.fragment.ProductDetailsFragment">
 
     <androidx.cardview.widget.CardView
@@ -40,7 +40,7 @@
                 android:layout_marginStart="5dp"
                 android:layout_marginEnd="5dp"
                 android:layout_marginTop="5dp"
-                android:text="TextView"
+                android:text=""
                 android:textSize="35sp"
                 app:layout_constraintEnd_toEndOf="@id/guideline"
                 app:layout_constraintHorizontal_bias="0.04"
@@ -52,7 +52,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:text="TextView"
+                android:text=""
                 android:textSize="20sp"
                 app:layout_constraintHorizontal_bias="0"
                 app:layout_constraintEnd_toEndOf="@id/guideline"
@@ -64,7 +64,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:text="TextView"
+                android:text=""
                 android:textSize="30sp"
                 app:layout_constraintStart_toStartOf="@+id/imageViewDetails"
                 app:layout_constraintTop_toBottomOf="@+id/textViewTitleDetails" />

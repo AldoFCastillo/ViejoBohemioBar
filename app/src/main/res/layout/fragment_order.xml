@@ -23,7 +23,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="40dp"
                 android:layout_marginBottom="38dp"
-                android:text="Tomar pedido"
+                android:backgroundTint="@color/colorPrimaryDark"
+                android:textColor="@color/colorTextoBlanco"
+                android:text="@string/tomar_pedido"
                 android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="@id/buttonConfirmOrder"
@@ -37,7 +39,9 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="40dp"
                 android:layout_marginBottom="38dp"
-                android:text="Cancelar Pedido"
+                android:backgroundTint="@color/colorPrimaryDark"
+                android:textColor="@color/colorTextoBlanco"
+                android:text="@string/cancelar_pedido"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/textInputLayoutPassOrder" />
@@ -48,7 +52,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="30dp"
                 android:gravity="center_horizontal"
-                android:text="Tu Pedido"
+                android:text="@string/tu_pedido"
                 android:textSize="30sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -65,14 +69,15 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/textViewTitleOrder" />
 
-
             <Button
                 android:id="@+id/buttonConfirmOrder"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="20dp"
                 android:layout_marginBottom="38dp"
-                android:text="Confirmar Pedido"
+                android:backgroundTint="@color/colorPrimaryDark"
+                android:textColor="@color/colorTextoBlanco"
+                android:text="@string/confirmar_pedido"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/buttonCancelOrder" />
 
@@ -91,13 +96,13 @@
                     android:id="@+id/radioButtonEfectivo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Efectivo" />
+                    android:text="@string/efectivo" />
 
                 <RadioButton
                     android:id="@+id/radioButtonOtros"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Tarjeta/Otros" />
+                    android:text="@string/tarjeta_otros" />
             </RadioGroup>
 
             <EditText
@@ -107,7 +112,7 @@
                 android:layout_marginTop="10dp"
                 android:background="@null"
                 android:gravity="top|start"
-                android:hint="Deja tu comentario"
+                android:hint="@string/deja_tu_comentario"
                 android:imeOptions="actionDone"
                 android:inputType="textMultiLine"
                 android:lines="3"
@@ -121,7 +126,7 @@
                 android:layout_width="300dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="60dp"
-                android:text="Necesito que un/a camarera/o se acerque a la mesa"
+                android:text="@string/necesito_que_un_a_camarera_o_se_acerque_a_la_mesa"
                 app:layout_constraintEnd_toEndOf="@id/recyclerViewOrder"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/editTextCommentsOrder" />
@@ -132,7 +137,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="1dp"
                 android:layout_marginTop="10dp"
-                android:text="Como vas a pagar?"
+                android:text="@string/como_vas_a_pagar"
                 app:layout_constraintStart_toStartOf="@+id/recyclerViewOrder"
                 app:layout_constraintTop_toBottomOf="@+id/textViewTotalOrder" />
 
@@ -141,7 +146,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:text="Comentarios:"
+                android:text="@string/comentarios"
                 app:layout_constraintStart_toStartOf="@id/textViewTitleRadioOrder"
                 app:layout_constraintTop_toBottomOf="@+id/radioGroupOrder" />
 
@@ -149,7 +154,7 @@
                 android:id="@+id/textViewTotalOrder"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="TextView"
+                android:text=""
                 android:textSize="20sp"
                 app:layout_constraintStart_toStartOf="@+id/textViewTitleTotalOrder"
                 app:layout_constraintTop_toBottomOf="@id/textViewTitleTotalOrder"
@@ -161,7 +166,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:text="Total:"
+                android:text="@string/total"
                 android:textSize="20sp"
                 app:layout_constraintStart_toStartOf="@id/recyclerViewOrder"
                 app:layout_constraintTop_toBottomOf="@id/recyclerViewOrder"
@@ -189,8 +194,8 @@
                     android:layout_gravity="center"
                     android:layout_marginStart="5dp"
                     android:layout_marginTop="20dp"
-                    android:backgroundTint="#FF3978FC"
-                    android:hint="ingresa la clave"
+                    android:backgroundTint="@color/colorPrimaryDark"
+                    android:hint="@string/ingresa_la_clave"
                     android:inputType="textPassword"
                     android:textColor="@color/colorTextoOscuro"
                     android:textColorHint="@color/colorTextoOscuro"

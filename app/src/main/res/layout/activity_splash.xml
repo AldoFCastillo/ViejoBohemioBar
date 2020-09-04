@@ -11,25 +11,24 @@
         android:id="@+id/textViewHome"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/viejo_bohemio"
         android:fontFamily="@font/viejo_bohemio"
+        android:text="@string/viejo_bohemio"
         android:textSize="60sp"
-        app:layout_constraintVertical_bias="0.3"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.3" />
 
-    <TextView
-        android:id="@+id/textViewHome2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/menu_app"
-        android:fontFamily="sans-serif-black"
-        android:textSize="30sp"
+
+    <ImageView
+        android:id="@+id/imgeViewIntroSplash"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/ic_oldman"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewHome" />
+        app:layout_constraintTop_toBottomOf="@id/textViewHome" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

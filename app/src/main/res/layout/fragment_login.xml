@@ -19,8 +19,8 @@
             android:layout_gravity="center"
             android:layout_marginTop="30dp"
             android:fontFamily="sans-serif-black"
-            android:text="Login"
-            android:textColor="#FF3978FC"
+            android:text="@string/login"
+            android:textColor="@color/colorAccent"
             android:textSize="60sp" />
 
         <TextView
@@ -31,7 +31,7 @@
             android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
             android:fontFamily="sans-serif"
-            android:text="Si sos parte del staff ingresa tu mail y contraseña"
+            android:text="@string/si_sos_parte_del_staff_ingresa_tu_mail_y_contrase_a"
             android:textColor="@color/colorTextoOscuro"
             android:textSize="20sp"
             android:visibility="visible" />
@@ -69,8 +69,8 @@
                         android:layout_gravity="center"
                         android:layout_marginStart="5dp"
                         android:layout_marginTop="20dp"
-                        android:backgroundTint="#FF3978FC"
-                        android:hint="email"
+                        android:backgroundTint="@color/colorAccent"
+                        android:hint="@string/email"
                         android:inputType="textEmailAddress"
                         android:textColor="@color/colorTextoOscuro"
                         android:textColorHint="@color/colorTextoOscuro"
@@ -94,8 +94,8 @@
                         android:layout_gravity="center"
                         android:layout_marginStart="5dp"
                         android:layout_marginTop="20dp"
-                        android:backgroundTint="#FF3978FC"
-                        android:hint="contraseña"
+                        android:backgroundTint="@color/colorAccent"
+                        android:hint="@string/contrase_a"
                         android:inputType="textPassword"
                         android:textColor="@color/colorTextoOscuro"
                         android:textColorHint="@color/colorTextoOscuro"
@@ -111,8 +111,8 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginTop="10dp"
-                    android:background="#3978FC"
-                    android:text="ingresar"
+                    android:backgroundTint="@color/colorAccent"
+                    android:text="@string/ingresar"
                     android:textColor="@color/colorTextoBlanco" />
 
 

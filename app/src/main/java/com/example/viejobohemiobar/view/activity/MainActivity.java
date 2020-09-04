@@ -41,17 +41,8 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
-
-
-import java.util.Locale;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -234,8 +225,6 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        //iScanner@#001#001  - BohemioScanner@#1
-        //  String table = "1";
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         setFragment(new HomeFragment());
         if ((result != null) && (result.getContents() != null)) {
@@ -246,6 +235,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
     }
 
     private void validateQRCode(String qrcode) {
+        //BohemioScanner@#1 - BohemioScanner@#1#001
         if (qrcode.startsWith("BohemioScanner@")) {
             qrcode = qrcode.substring(14);
             String[] ids = qrcode.split("#");
@@ -266,9 +256,6 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.list
 
     }
 
-
-    //TODO progressbar
-    //TODO logos
 
     @Override
     public void loginFragmentListener() {

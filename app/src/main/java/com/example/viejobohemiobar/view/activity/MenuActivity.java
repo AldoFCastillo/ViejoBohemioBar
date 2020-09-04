@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -53,6 +55,8 @@ public class MenuActivity extends AppCompatActivity implements RecyclerMenuFragm
     Toolbar toolbar;
     @BindView(R.id.constraintMenuActivity)
     ConstraintLayout constraintMenuActivity;
+    @BindView(R.id.progressMenuActivity)
+    ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,16 +76,22 @@ public class MenuActivity extends AppCompatActivity implements RecyclerMenuFragm
 
     }
 
-    private void getMenu(){
+    private void getMenu() {
         resultViewModel.getResults();
         getResultsObserver();
     }
 
-    private void getResultsObserver(){
+    private void getResultsObserver() {
         resultViewModel.resultData.observe(this, result -> {
             MenuActivity.result = result;
             setFragment(new MenuFragment());
             Toast.makeText(MenuActivity.this, "Ya podes armar tu pedido", Toast.LENGTH_SHORT).show();
+        });
+        resultViewModel.loading.observe(this, aBoolean -> {
+            if (!aBoolean) progressBar.setVisibility(View.GONE);
+        });
+        resultViewModel.error.observe(this, aBoolean -> {
+            if (aBoolean) Toast.makeText(MenuActivity.this, "Ocurrió un error", Toast.LENGTH_SHORT).show();
         });
     }
 
@@ -91,6 +101,13 @@ public class MenuActivity extends AppCompatActivity implements RecyclerMenuFragm
         fragmentTransaction.replace(R.id.constraintMenuActivity, fragment);
         fragmentTransaction.commit();
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.toolbar_menu, menu);
+        return true;
+    }
+
 
     private void setToolBar() {
         setSupportActionBar(toolbar);
@@ -113,17 +130,11 @@ public class MenuActivity extends AppCompatActivity implements RecyclerMenuFragm
             if (result != null) {
                 OrderFragment orderFragment = OrderFragment.newInstance(result, table);
                 setFragment(orderFragment);
-                Snackbar.make(constraintMenuActivity, "Tu pedido",Snackbar.LENGTH_SHORT ).show();
+                Snackbar.make(constraintMenuActivity, "Tu pedido", Snackbar.LENGTH_SHORT).show();
             } else
                 Toast.makeText(MenuActivity.this, "Aun no has agregado ningun producto", Toast.LENGTH_SHORT).show();
 
         });
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.toolbar_menu, menu);
-        return true;
     }
 
 
